@@ -2,11 +2,15 @@
 <html>
 <head>
 	<title>{{ page_title }}</title>
+	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- Bootstrap 4.4.1 -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<!-- My Style -->
+	{% load static %}
+	<link rel="stylesheet" href="{%  static 'css/mystyle.css' %}">
 </head>
 <body>
 	<!-- Menu -->
@@ -27,28 +31,28 @@
 			Evenement
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-			  <a class="dropdown-item" href="#">Nouvel Evenement</a>
+			  <a class="dropdown-item" href="{% url 'add_event' %}">Nouvel Evénement</a>
 			</div>
 		</li>
 		{% endif %}
-		{% if current_user.auth_level == 9 %}
+		{% if user.is_staff %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			Administration
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-			  <a class="dropdown-item" href="#">Liste evenements</a>
+			  <a class="dropdown-item" href="{% url 'list_events' %}">Liste événements</a>
 			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">Ajouter employe</a>
-			  <a class="dropdown-item" href="#">Lister employes</a>
+			  <a class="dropdown-item" href="#">Ajouter employé</a>
+			  <a class="dropdown-item" href="#">Lister employés</a>
 			  <div class="dropdown-divider"></div>
 			  <a class="dropdown-item" href="#">Ajouter utilisateur</a>
 			  <a class="dropdown-item" href="#">Lister utilisateurs</a>
 			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">Ajouter site</a>
-			  <a class="dropdown-item" href="#">Lister sites</a>
+			  <a class="dropdown-item" href="{% url 'add_site' %}">Ajouter site</a>
+			  <a class="dropdown-item" href="{% url 'list_sites' %}">Lister sites</a>
 			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">Configurer Dashbord</a>
+			  <a class="dropdown-item" href="{{ '/admin' }}">Configurer Dashbord</a>
 			</div>
 		</li>
 		{% endif %}
@@ -60,12 +64,16 @@
 		  </li>
 		</ul>
 		<div class="pull-right">
-			{% if current_user.is_authenticated %}
-			<span>Welcome, {{ current_user.username }} - </span>
-			<a href= "#" >Deconnexion</a>
+			{% if user.is_authenticated %}
+				{% if user.first_name %}
+					<span class="togle-case">Welcome, {{ user.first_name }} - </span>
+				{% else %}
+					<span class="togle-case">Welcome, {{ user.username }} - </span>
+				{% endif %}
+			<a href= "{% url 'logout' %}" >Déconnexion</a>
 			{% else %}
 			<a class="mr-2" href="#" ><span class="fa fa-user">&nbsp;</span>Inscription</a>
-			<a class="" href="{{ 'admin' }}" ><span class="fa fa-sign-in">&nbsp;</span>Connexion</a>
+			<a class="" href="{% url 'login' %}" ><span class="fa fa-sign-in">&nbsp;</span>Connexion</a>
 			{% endif %}
 		</div>
 	  </div>
@@ -87,7 +95,7 @@
 		{% endblock body %}
 	</div>
 	<footer class="footer text-center mt-5">
-		<p class="pull-center">&copy; Projet Sante - 2020</p>
+		<p class="">&copy; Projet Sante - 2020</p>
 	</footer>
 
 	<!-- jQuery 3 -->

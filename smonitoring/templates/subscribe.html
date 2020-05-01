@@ -2,14 +2,20 @@
 
 {% block body %}
 <section>
-	<h3 class="card-title bg-primary text-center">Inscription</h3>
+	<h3 class="text-center">Inscription</h3>
 	<form method="POST" >
 		{% csrf_token%}
-		<div class="row mx-auto">
-			{% include "_formhelpers.html" %}
-			<div class="form-group col-sm-12 col-md-6">
-				<button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
+		<div class="row mx-auto" style="width:500px; max-width:100%">
+		{% for field in form %}
+			<div class="form-group col-sm-12">
+				{{field.label_tag}}
+				{{field}}
+				<small class="alert-danger">{{field.errors}}</small>
 			</div>
+		{% endfor %}
+		<div class="form-group col-sm-12">
+			<button type="submit" class="btn btn-primary btn-block">Inscription</button>
+		</div>
 		</div>
 	</form>
 </section>
@@ -22,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			input.setAttribute('class','form-control');
 		});
 	document.querySelectorAll("select").forEach(function(select){
-			select.setAttribute('class','form-control');
+			//select.setAttribute('class','form-control');
 		});
 	});
 </script>

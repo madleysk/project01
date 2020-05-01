@@ -2,9 +2,20 @@
 
 {% block body %}
 <style>
+th{
+	text-transform: uppercase;
+	}
 .donut-inner{
 font-weight: bold;
 }
+.up { 
+	background-color: ; 
+	color: #008000; 
+	}
+.down { 
+	background-color: #FFFFFF; 
+	color: #FF0000 
+	}
 </style>
 <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -68,8 +79,8 @@ font-weight: bold;
 				<div class="card-body p-0 table-responsive">
 					<table class="table table-striped table-hover">
 						<th>Status</th><th>Site</th><th>date rapporte</th>
-						{% for event in events %}
-						<tr class="{{event.status_ev}} togle-case"><td>{{event.element}} {{event.status_ev}}</td><td>{{event.nom}}</td><td>{{event.date_rap}}</td></tr>
+						{% for event in recent_events %}
+						<tr class="{{event.status_ev}} togle-case"><td>{{event.entite_concerne}} {{event.status_ev}}</td><td>{{event.code_site}}</td><td>{{event.date_rap}}</td></tr>
 						{% endfor %}
 					</table>
 				</div>
@@ -81,8 +92,8 @@ font-weight: bold;
 				<div class="card-body p-0 table-responsive">
 					<table class="table table-striped table-hover">
 						<th class="text-center">Nom site</th>
-						{% for bad_site in bad_sites %}
-						<tr><td class="down">{{bad_site.nom_site}}</td></tr>
+						{% for bad_site in top_bad_sites %}
+						<tr><td class="down">{{ bad_site.nom }} <span class="badge badge-danger">{{ bad_site.qte }}</span></td></tr>
 						{% endfor %}
 					</table>
 				</div>

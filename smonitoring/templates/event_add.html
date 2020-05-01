@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<style>
+	label{
+		display:block;
+		font-weight: bold;
+		}
+</style>
+<form method="POST" >{% csrf_token%}
+	<div class="row">
+	{% include "_formhelpers.html" %}
+	</div>
+	<div class="form-group">
+		<input type="checkbox" name="serveurs"id="serveurs" value="no">
+		<strong>Ajouter status serveurs</strong>
+	</div>
+	
+		<div id="serveurs_status" class="invisible" style="display:none;">
+<hr>
+			<div class="row">
+			<div class="form-group col-md-6">
+				<div style="display:inline-block">
+				<strong>Isante Status</strong>
+				<select name="isante_status" class="form-control">
+					<option value="">Sélectionner</option>
+					<option value="up">Up</option>
+					<option value="down">Down</option>
+					<option value="aucun">Non installe</option>
+				</select>
+				</div>
+				<div style="display:inline-block">
+				<strong>Raison</strong>
+				<select name="raison_isante" class="form-control">
+					<option value="">Sélectionner</option>
+					<option value="0">N/A</option>
+					<option value="1">Problème FAI</option>
+					<option value="2">Problème Interne</option>
+					<option value="3">Problème non identifié</option>
+					<option value="4">Source non identifié</option>
+				</select>
+				</div>
+			</div>
+			<div class="form-group col-md-6">
+				<div style="display:inline-block">
+				<strong>Fingerprint Status</strong>
+				<select name="fingerprint_status" class="form-control">
+					<option value="">Sélectionner</option>
+					<option value="up">Up</option>
+					<option value="down">Down</option>
+					<option value="aucun">Non installé</option>
+				</select>
+				</div>
+				<div style="display:inline-block">
+				<strong>Raison</strong>
+				<select name="raison_fingerprint" class="form-control">
+					<option value="">Sélectionner</option>
+					<option value="0">N/A</option>
+					<option value="1">Problème FAI</option>
+					<option value="2">Problème Interne</option>
+					<option value="3">Problème non identifié</option>
+					<option value="4">Source non identifié</option>
+				</select>
+				</div>
+			</div>
+			</div>
+		</div>
+<hr>
+	
+	<button type="submit" class="btn btn-primary">Valider</button>
+</form>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+	
+	document.querySelector("#serveurs").onchange = function(){
+		if (this.checked){
+				document.querySelector("#serveurs_status").setAttribute('class','visible');
+				document.querySelector("#serveurs_status").style.display='';
+				let ent_stat = document.getElementById("id_entite_concerne");
+				ent_stat.selectedIndex=1;
+				//ent_stat.disabled=true;
+				this.value='yes';
+			}
+		else{
+				document.querySelector("#serveurs_status").setAttribute('class','invisible');
+				document.querySelector("#serveurs_status").style.display='none';
+				let ent_stat = document.getElementById("id_entite_concerne");
+				//ent_stat.disabled=false;
+				this.value='no';
+			}
+		};
+	document.querySelectorAll("p").forEach(function(p){
+			//p.setAttribute('class','form-group col-md-6');
+		});
+	document.querySelectorAll("input").forEach(function(input){
+			//input.setAttribute('class','form-control');
+		});
+	document.querySelectorAll("select").forEach(function(select){
+			//select.setAttribute('class','form-control');
+		});
+	});
+</script>
+{% endblock %}
