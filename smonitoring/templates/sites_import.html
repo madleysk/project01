@@ -1,0 +1,27 @@
+<!-- Import sites Modal -->
+<div class="modal fade" id="importSiteModal" tabindex="-1" role="dialog" aria-labelledby="importSiteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+	<form method="post" action="{% url 'import_sites' %}" >{% csrf_token%}
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="importSiteModalLabel">Importer Fichier</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+		  </div>
+		  <div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+						<label for="fichier">Importer fichier</label>
+						<input type="file" name="fichier" id="fichier" >
+					</div>
+				</div>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+			<button type="submit" class="btn btn-primary">Importer</button>
+		  </div>
+		</div>
+	</form>
+  </div>
+</div>

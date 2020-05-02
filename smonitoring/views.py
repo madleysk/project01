@@ -5,11 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.urls import reverse
 from django.db.models import Count, ExpressionWrapper
-from .forms import SiteForm, EvenementForm,EvenementEditForm, RegistrationForm
+from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, RegistrationForm
 from .models import Site,Evenement
-from .fonctions import import_csv_ev,format_form_field
+from .fonctions import import_csv_ev,format_form_field, pagination_format
 from datetime import datetime
 from django.db import connection
+
+PER_PAGE = 25
 
 # Create your views here.
 def index(request):
@@ -105,25 +107,55 @@ def subscribe(request):
 
 @login_required
 def add_site(request):
-	form = SiteForm()
-	format_form_field(form)
 	context= {
 		"page_title":"Ajouter Site",
-		"form":form,
 	}
 	#import_csv_ev('smonitoring/uploaded/liste_sites.csv','Site')
 	if request.method == 'POST':
-		new_site = Site(form)
-		new_site.save()
+		form = SiteForm(request.POST)
+		format_form_field(form)
+		
+		if form.is_valid():
+			vals=[]
+			# get form submitted values and add them to the list
+			for field in form.cleaned_data:
+				vals.append(form.cleaned_data[field])
+			# Creating new site object and save it to the database
+			new_site = Site(code=vals[0],type_site=vals[1],nom=vals[2]\
+			,sigle=vals[3],region=vals[4],departement=vals[5],commune=vals[6]\
+			,adresse=vals[7],pepfar=vals[8],contact_1=vals[9],tel_1=vals[10],contact_2=vals[11]\
+			,tel_2=vals[12],fai=vals[13],internet=vals[15],isante=vals[15],fingerprint=vals[16])
+			new_site.save()	
+			# redirect to the sites list page	
+			return HttpResponseRedirect(reverse('list_sites'))
+	else:
+		form = SiteForm(None)
+		format_form_field(form)
+	
+	context['form']=form
 	return render(request, 'site_add.html', context)
 
 @login_required
 def edit_site(request,id_site):
-	page_title = 'Modifier site'
 	context = {
-		"page_title":page_title
+		"page_title": 'Modifier site'
 	}
-	return render(request, 'index.html', context)
+	try:
+		site= Site.objects.get(pk=id_site)
+	except Site.DoesNotExist:
+		return HttpResponseRedirect(reverse('list_sites'))
+	if request.method == 'POST':
+		form = SiteEditForm(request.POST,instance=site)
+		format_form_field(form)
+		if form.is_valid():
+			site_edited = form.save()
+			return HttpResponseRedirect(reverse('list_sites'))
+	else:
+		form = SiteEditForm(instance=site)
+		format_form_field(form)
+	context['form']= form
+	return render(request, 'site_edit.html', context)
+
 @login_required
 def site(request,id_site):
 	page_title = 'Information sur le site'
@@ -131,22 +163,30 @@ def site(request,id_site):
 		"page_title":page_title
 	}
 	return render(request, 'index.html', context)
+
 @login_required
 def list_sites(request,page=1):
 	"""List of sites with pagination enabled"""
 	page_title = 'Liste des sites'
 	context = {
-		"page_title":page_title
+		"page_title":page_title,
 	}
-	PER_PAGE = 25
 	site_list = Site.objects.all().order_by('nom')
 	paginator = Paginator(site_list,PER_PAGE)
 	page_number = request.GET.get('page')
 	page_obj = paginator.get_page(page_number)
-	context['liste_sites']=page_obj
+	context['page_obj']=page_obj
+	context['page_range']= pagination_format(page_obj)
 	
 	return render(request, 'site_list.html', context)
 
+@login_required
+def import_sites(request):
+	"""Import sites from csv file"""
+	if request.method == 'POST':
+		# import commands
+		pass
+	return HttpResponseRedirect(reverse('list_sites'))
 
 @login_required
 def add_event(request):
@@ -163,7 +203,6 @@ def add_event(request):
 			
 		if new_event.is_valid():
 			code_site=new_event.cleaned_data['code_site']
-			print('code site:',code_site)
 			entite_concerne=new_event.cleaned_data['entite_concerne']
 			status_ev=new_event.cleaned_data['status_ev']
 			date_ev= new_event.cleaned_data['date_ev']
@@ -244,11 +283,13 @@ def list_events(request,page=1):
 	context = {
 		"page_title":page_title
 	}
-	PER_PAGE = 25
 	event_list = Evenement.objects.all().select_related('code_site').order_by('-date_entree')
 	paginator = Paginator(event_list, PER_PAGE)
 	page_number = request.GET.get('page')
 	page_obj = paginator.get_page(page_number)
-	context['liste_events']=page_obj
+	context['page_obj']=page_obj
+	context['page_range']= pagination_format(page_obj)
 
 	return render(request, 'event_list.html', context)
+		
+

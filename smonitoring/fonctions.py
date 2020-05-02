@@ -60,3 +60,10 @@ def format_form_field(form):
 		if not isinstance(f.field.widget, forms.SelectDateWidget):
 			f.field.widget.attrs.update({'class':'form-control'})
 
+def pagination_format(page_obj):
+	index = page_obj.number
+	max_index= len(page_obj.paginator.page_range)
+	start_index= index - 3 if index >=3 else 0
+	end_index = index + 3 if index <= max_index - 3 else max_index
+	page_range = list(page_obj.paginator.page_range)[start_index:end_index]
+	return page_range

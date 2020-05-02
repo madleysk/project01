@@ -14,6 +14,7 @@ urlpatterns = [
 	path("site/<int:id_site>",views.site,name="site"),
 	path("list_sites/",views.list_sites,name="list_sites"),
 	path("list_sites/page/<int:page>",views.list_sites,name="list_sites"),
+	path("import_sites/",views.import_sites,name="import_sites"),
 	
 	path("add_event/",views.add_event,name="add_event"),
 	path("edit_event/<int:id_event>",views.edit_event,name="edit_event"),
