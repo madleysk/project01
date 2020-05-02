@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from django.utils import timezone as timezone
 # Working with django user model
 from django.contrib.auth.models import User
 
@@ -62,9 +63,9 @@ class Evenement(models.Model):
 	entite_concerne = models.CharField(max_length=100, choices= [('internet','Internet'),('isante','Isante Server'),('fingerprint','Fingerprint Server')]) # internet, isante or fingerprint
 	status_ev = models.CharField(max_length=10, choices= EL_CHOICES) # up, down, none
 	raison_ev = models.CharField(max_length=100, choices= RAISON_CHOICES)
-	date_ev = models.DateField(default=datetime.now().date())
-	date_rap = models.DateField(default=datetime.now().date())
-	date_entree = models.DateTimeField(default=datetime.utcnow)
+	date_ev = models.DateField(default=timezone.now)
+	date_rap = models.DateField(default=timezone.now)
+	date_entree = models.DateTimeField(default=timezone.now)
 	pers_contact = models.CharField(max_length=100, default=None, blank=True,null=True)
 	remarques = models.CharField(max_length=100, default=None, blank=True,null=True)
 	code_utilisateur = models.CharField(max_length=100)
