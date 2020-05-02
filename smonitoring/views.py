@@ -20,7 +20,7 @@ def index(request):
 	if filtre != None and filtre != 'all':
 		filtre = filtre.upper()
 		with connection.cursor() as cursor:
-			cursor.execute("SELECT COUNT(*) qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND e.status_ev=%s AND s.region=%s GROUP BY e.code_site_id ORDER BY qte DESC LIMIT 5", params=['down',filtre.upper()])
+			cursor.execute('SELECT COUNT(*) qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND e.status_ev=%s AND s.region=%s GROUP BY e.code_site_id ORDER BY qte DESC LIMIT 5', params=['down',filtre.upper()])
 			top_bad_sites = cursor.fetchall()
 			top_bad_sites_formated = []
 			for t in top_bad_sites:
