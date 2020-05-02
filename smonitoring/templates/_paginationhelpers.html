@@ -1,28 +1,30 @@
-{% macro render_pagination(pagination,endpoint) %}
-	<nav aria-label="Navigation Page" class="text-center" style="overflow:auto;">
-		<ul class="pagination">
-			{% if pagination.has_prev %}
-			<li class="page-item" ><a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num) }}?{{ request.query_string.decode() }}">Precedent</a></li>
-			{% endif %}
-			
-			{% for page_num in pagination.iter_pages() %}
-				{% if page_num %}
-					{% if page_num != pagination.page %}
-						<li class="active"><a class="page-link" href="{{ url_for(endpoint, page=page_num ) }}?{{ request.query_string.decode() }}">{{ page_num }}</a></li>
-					{% else %}
-						<li class="page-item" ><a class="page-link" href="#">{{ page_num }}</a></li>
-					{% endif %}
+<div class="text-center">
+	<span class="ellipsis">
+		Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}.
+	</span>
+</div>
+<nav aria-label="Navigation Page" class="pull-right" style="overflow:auto;">
+	<ul class="pagination">
+		{% if page_obj.has_previous %}
+			<li class="page-item"><a class="page-link" href="?page=1" title="Aller à la première page" >&laquo; </a></li>
+			<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}" title="Page précédente">précédent</a></li>
+		{% endif %}
+		
+		{% for page_num in page_range %}
+			{% if page_num %}
+				{% if page_num == page_obj.number %}
+					<li class="active"><a class="page-link" href="#">{{ page_num }}</a></li>
 				{% else %}
-					<li class="page-item" ><span class="ellipsis">...</span></li>
+					<li class="page-item" ><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
 				{% endif %}
-			{% endfor %}
-			
-			{% if pagination.has_next %}
-				<li class="page-item"><a class="page-link" href="{{ url_for(endpoint,page=pagination.next_num) }}?{{ request.query_string.decode() }}">Suivant</a></li>
+			{% else %}
+				<li class="page-item" ><span class="ellipsis">...</span></li>
 			{% endif %}
-		</ul>
-	</nav>
-{% endmacro %}
+		{% endfor %}
 
-
-
+		{% if page_obj.has_next %}
+			<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}" title="Page suivante">suivant</a></li>
+			<li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" title="Aller à la dernière page"> &raquo;</a></li>
+		{% endif %}
+	</ul>
+</nav>

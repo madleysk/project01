@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<section class="content">
+	<h4 class="text-center">{{ page_title }}</h4>
+	<form method=post>{% csrf_token%}
+		<div class="row">
+		{% include "_formhelpers.html" %}
+		<div class="form-group col-md-6">
+			<button type="submit" class="btn-sm btn-success">Modifier</button>
+			<a href="" class="btn btn-primary btn-sm">Importer</a>
+		</div>
+		</div>
+	</form>
+</section>
+{% endblock %}

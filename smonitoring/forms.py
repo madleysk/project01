@@ -5,7 +5,7 @@ from .models import Site, Evenement
 from datetime import datetime
 #from django import Form
 
-EL_STATUS= [('','----------'),('up','Up'),('down','Down'),('none','Non installe')]
+EL_STATUS= [('','----------'),('up','Up'),('down','Down'),('none','Non installé')]
 
 class RegistrationForm(forms.Form):
 	username = forms.CharField(max_length=100)
@@ -28,7 +28,7 @@ class RegistrationForm(forms.Form):
 			])
 		if passwd != pwd_confirm:
 			self._errors['passwd'] = self.error_class([
-			'Confirmation mot de passe differente.'
+			'Confirmation mot de passe différente.'
 			])
 		if len(code) < 4:
 			self._errors['code'] = self.error_class([
@@ -62,7 +62,24 @@ class SiteForm(forms.Form):
 	internet = forms.ChoiceField(choices=EL_STATUS)
 	isante = forms.ChoiceField(choices=EL_STATUS)
 	fingerprint = forms.ChoiceField(label='Status',choices=EL_STATUS)
-
+	
+	def clean(self):
+		super(SiteForm, self).clean()
+		code = self.cleaned_data.get('code')
+		
+		# Code validation
+		if len(code) < 4:
+			self._errors['code'] = self.error_class([
+			'Code invalide.'
+			])
+		try:
+			code_exists = Site.objects.get(code=code)
+			if code_exists is not None:
+				self._errors['code'] = self.error_class([
+				'Code doit être unique.'
+				])
+		except Site.DoesNotExist:
+			pass
 
 class SiteEditForm(ModelForm):
 	class Meta:
@@ -96,11 +113,11 @@ class EvenementForm(forms.Form):
 		
 		if ((date_ev) > (date_rap)):
 			self._errors['date_ev'] = self.error_class([
-			'Date incohrente.'
+			'Date incohérente.'
 			])
 		if (date_rap) < (date_ev):
 			self._errors['date_rap'] = self.error_class([
-			'Date incohrente.'
+			'Date incohérente.'
 			])
 
 			

@@ -1,17 +1,18 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<section>
-	<h3 class="card-title bg-primary text-center">Inscription</h3>
+<section class="content">
+	<h3 class="card-title text-center">{{ page_title }}</h3>
 	<form method="POST" >
 		{% csrf_token%}
 		<div class="row mx-auto">
 			{% include "_formhelpers.html" %}
-			<div class="form-group col-sm-12 col-md-6">
+			<div class="form-group col-sm-12 col-md-4">
 				<button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
 			</div>
 		</div>
 	</form>
+
 </section>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
