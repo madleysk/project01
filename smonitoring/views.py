@@ -209,7 +209,8 @@ def import_sites(request):
 				if csv_file.multiple_chunks() is False:
 					file_data = csv_file.read().decode("utf-8")
 					result = import_site_from_csv(file_data)
-					return render(request, 'site_list.html', context)
+					context['msg_success']= f'{result["new"]} ligne(s) inserée(s), {result["edit"]} modifiée(s)'
+					return render(request, 'file_import.html', context)
 				else:
 					return HttpResponse('Fichier trop lourd !')
 			else:
@@ -348,7 +349,8 @@ def import_events(request):
 				if csv_file.multiple_chunks() is False:
 					file_data = csv_file.read().decode("utf-8")
 					result = import_event_from_csv(file_data)
-					return render(request, 'event_list.html', context)
+					context['msg_success']= f'{result["new"]} ligne(s) inserée(s)' 
+					return render(request, 'file_import.html', context)
 				else:
 					return HttpResponse('Fichier trop lourd !')
 			else:

@@ -2,6 +2,7 @@ from .models import Site,Evenement
 from datetime import datetime
 import csv
 from django import forms
+from django.utils import timezone as timezone
 
 def import_csv_ev(fichier,nom_classe):
 	with open(fichier) as csv_file:
@@ -33,7 +34,7 @@ def import_csv_ev(fichier,nom_classe):
 			db.session.commit()"""
 		if nom_classe == 'Evenement':
 			for evenement in lignes_contenu:
-				date_entree= datetime.now()
+				date_entree= timezone.now
 				code_utilisateur= '1001'
 				entite_concerne=evenement[2].lower()
 				status_ev = evenement[3].lower()
@@ -67,7 +68,7 @@ def import_site_from_csv(fichier):
 			line_count += 1
 			#print('Entete colonne',header)
 		else:
-			row=list(ligne.split(","))
+			row=list(ligne.replace('"','').replace("'",'').split(","))
 			if len(row) == 17:
 				try:
 					site = Site.objects.get(code=row[0])
@@ -116,7 +117,7 @@ def import_event_from_csv(fichier):
 			ligne= list(ligne.replace('"','').replace("'",'').split(','))
 			if len(ligne) > 6 and len(ligne) <= 9:
 				code_site= None
-				date_entree=datetime.now()
+				date_entree=timezone.now()
 				code_utilisateur= '1001'
 				entite_concerne=''
 				status_ev = ''
