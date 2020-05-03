@@ -41,13 +41,14 @@
 			Administration
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+			  <a class="dropdown-item" href="{% url 'import_events' %}">Importer événements</a>
 			  <a class="dropdown-item" href="{% url 'list_events' %}">Liste événements</a>
 			  <div class="dropdown-divider"></div>
 			  <a class="dropdown-item" href="#">Ajouter utilisateur</a>
 			  <a class="dropdown-item" href="#">Liste utilisateurs</a>
 			  <div class="dropdown-divider"></div>
 			  <a class="dropdown-item" href="{% url 'add_site' %}">Ajouter site</a>
-			  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#importSiteModal">Importer sites</a>
+			  <a class="dropdown-item" href="{% url 'import_sites' %}" >Importer sites</a>
 			  <a class="dropdown-item" href="{% url 'list_sites' %}">Liste sites</a>
 			  <div class="dropdown-divider"></div>
 			  <a class="dropdown-item" href="{{ '/admin' }}">Admin Panel</a>
@@ -85,21 +86,11 @@
 		{% endif %}
 	<!-- End Headline -->
 	<div class="container-fluid" style="min-height:200px;">
-		{% if message %}
-			<div class="alert alert-success alert-dismissible fade show" role="alert">
-			  <span class="msg">{{ message }}</span>
-			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			  </button>
-			</div>
-		{% endif %}
-		{% block headings %}
-		{% endblock headings %}
-		
+		<!-- Notifications template -->
+		{% include "notifications.html" %}
+		<!-- Body block -->		
 		{% block body %}
 		{% endblock body %}
-	<!-- Import sites Modal -->
-	{% include "sites_import.html" %}
 	</div>
 	<footer class="footer text-center mt-5">
 		<p class="">&copy; Projet Sante - 2020</p>

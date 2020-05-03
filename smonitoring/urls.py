@@ -10,13 +10,14 @@ urlpatterns = [
 	path("accounts/logout/",views.logout_view,name="logout"),
 	
 	path("add_site/",views.add_site,name="add_site"),
+	path("import_sites/",views.import_sites,name="import_sites"),
 	path("edit_site/<int:id_site>",views.edit_site,name="edit_site"),
 	path("site/<int:id_site>",views.site,name="site"),
 	path("list_sites/",views.list_sites,name="list_sites"),
 	path("list_sites/page/<int:page>",views.list_sites,name="list_sites"),
-	path("import_sites/",views.import_sites,name="import_sites"),
 	
 	path("add_event/",views.add_event,name="add_event"),
+	path("import_events/",views.import_events,name="import_events"),
 	path("edit_event/<int:id_event>",views.edit_event,name="edit_event"),
 	path("list_events/",views.list_events,name="list_events"),
 	path("list_events/page/<int:page>",views.list_events,name="list_events"),

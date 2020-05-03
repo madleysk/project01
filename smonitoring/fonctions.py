@@ -65,7 +65,7 @@ def import_site_from_csv(fichier):
 		if line_count == 0:
 			header=ligne.split(",")
 			line_count += 1
-			print('Entete colonne',header)
+			#print('Entete colonne',header)
 		else:
 			row=list(ligne.split(","))
 			if len(row) == 17:
@@ -97,7 +97,56 @@ def import_site_from_csv(fichier):
 					new_site.save()
 					new_line_count += 1
 				line_count += 1
-	return line_count
+
+	print(f"{new_line_count} nouvelles lignes, {edited_line_count} modifiees sur un total de {line_count-1} lignes.")
+	result= {"new":new_line_count,"edit":edited_line_count,"total":line_count}
+	return result
+
+def import_event_from_csv(fichier):
+	lignes = fichier.replace("\r","").split('\n')
+	line_count = 0
+	new_line_count = 0
+	edited_line_count = 0
+	for ligne in lignes:
+		if line_count == 0:
+			header=ligne.split(",")
+			line_count += 1
+			#print('Entete colonne',header)
+		else:
+			ligne= list(ligne.replace('"','').replace("'",'').split(','))
+			if len(ligne) > 6 and len(ligne) <= 9:
+				code_site= None
+				date_entree=datetime.now()
+				code_utilisateur= '1001'
+				entite_concerne=''
+				status_ev = ''
+				site = None
+				for evenement in ligne:
+					code_site = ligne[0]
+					entite_concerne=ligne[2].lower()
+					status_ev = ligne[3].lower()
+				try:
+					site = Site.objects.get(code=ligne[0])
+					new_event= Evenement(code_site=site,entite_concerne=entite_concerne.lower(),status_ev=ligne[3].lower(),date_ev=datetime.strptime(ligne[4], '%Y/%M/%d'),raison_ev=ligne[5],date_rap=datetime.strptime(ligne[6], '%Y/%M/%d'),pers_contact=ligne[7],remarques=ligne[8],date_entree=date_entree,code_utilisateur=code_utilisateur)
+					new_event.save()
+					new_line_count += 1
+				except Site.DoesNotExist:
+					raise Site.DoesNotExist('Il y a un probleme avec le fichier.')
+				line_count += 1
+				# updating element status
+				if entite_concerne.lower() == 'internet':
+					site.internet = status_ev
+					site.save()
+				elif entite_concerne.lower() == 'isante':
+					site.isante = status_ev
+					site.save()
+				elif entite_concerne.lower() == 'fingerprint':
+					site.fingerprint = status_ev
+					site.save()
+				else:
+					pass
+	result= {"new":new_line_count,"total":line_count}
+	return result
 
 def format_form_field(form):
 	for f in form:

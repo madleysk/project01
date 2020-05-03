@@ -7,9 +7,10 @@ from django.urls import reverse
 from django.db.models import Count, ExpressionWrapper
 from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, RegistrationForm
 from .models import Site,Evenement
-from .fonctions import import_csv_ev,format_form_field, pagination_format,import_site_from_csv
+from .fonctions import import_csv_ev,format_form_field, pagination_format,import_site_from_csv,import_event_from_csv
 from datetime import datetime
 from django.db import connection
+from django.db.models import Q # for complex queries
 
 PER_PAGE = 25
 
@@ -171,28 +172,49 @@ def list_sites(request,page=1):
 	context = {
 		"page_title":page_title,
 	}
-	site_list = Site.objects.all().order_by('nom')
-	paginator = Paginator(site_list,PER_PAGE)
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-	context['page_obj']=page_obj
-	context['page_range']= pagination_format(page_obj)
-	
+	keyword= request.GET.get('search')
+	if keyword is not None:
+		# searching for the keywords
+		site_list = Site.objects.filter(Q(nom__contains=keyword) | Q(code__contains=keyword)).order_by('nom')
+		paginator = Paginator(site_list,PER_PAGE)
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)
+		context['page_obj']=page_obj
+		context['page_range']= pagination_format(page_obj)
+	else:
+		site_list = Site.objects.all().order_by('nom')
+		paginator = Paginator(site_list,PER_PAGE)
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)
+		context['page_obj']=page_obj
+		context['page_range']= pagination_format(page_obj)
+	msg= request.GET.get('msg')
+
 	return render(request, 'site_list.html', context)
 
 @login_required
 def import_sites(request):
 	"""Import sites from csv file"""
+	page_title = 'Importer des sites'
+	context = {
+		"page_title":page_title,
+		"info":"Code*, type_site*, Titre*, sigle, Region*, Departement*, Commune*, Adresse, PEPFAR, Contact_1*, Tel_1*, Contact_2, Tel, FAI, internet, isante, fingerprint",
+	}
+
 	if request.method == 'POST':
 		# import commands
 		csv_file = request.FILES['fichier']
 		if csv_file is not None:
 			if csv_file.name.endswith('.csv'):
-				file_data = csv_file.read().decode("utf-8")
-				result = import_site_from_csv(file_data)
+				if csv_file.multiple_chunks() is False:
+					file_data = csv_file.read().decode("utf-8")
+					result = import_site_from_csv(file_data)
+					return render(request, 'site_list.html', context)
+				else:
+					return HttpResponse('Fichier trop lourd !')
 			else:
 				return HttpResponse('Erreur de fichier !')
-	return HttpResponseRedirect(reverse('list_sites'))
+	return render(request, 'file_import.html', context)
 
 @login_required
 def add_event(request):
@@ -289,13 +311,47 @@ def list_events(request,page=1):
 	context = {
 		"page_title":page_title
 	}
-	event_list = Evenement.objects.all().select_related('code_site').order_by('-date_entree')
-	paginator = Paginator(event_list, PER_PAGE)
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-	context['page_obj']=page_obj
-	context['page_range']= pagination_format(page_obj)
+	keyword= request.GET.get('search')
+	if keyword is not None:
+		event_list = Evenement.objects.select_related('code_site')\
+		.filter(Q(code_site__nom__contains=keyword) | Q(entite_concerne__contains=keyword)).order_by('-date_entree')
+		paginator = Paginator(event_list, PER_PAGE)
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)
+		context['page_obj']=page_obj
+		context['page_range']= pagination_format(page_obj)
+		context['url_params'] = '&search='+keyword
+	else:
+		event_list = Evenement.objects.all().select_related('code_site').order_by('-date_entree')
+		paginator = Paginator(event_list, PER_PAGE)
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)
+		context['page_obj']=page_obj
+		context['page_range']= pagination_format(page_obj)
 
 	return render(request, 'event_list.html', context)
 		
+@login_required
+def import_events(request):
+	"""Import events from csv file"""
+	context= {
+		"page_title":'Importer des Evénements',
+		"info_title":'Importer des Evénements',
+		"info":"code_site*, Nom du site*, Evènement*, status_ev*, date_ev*, raison, date_rap*, pers_cont, Autres remarques.",
+	}
+	
+	if request.method == 'POST':
+		# import commands
+		csv_file = request.FILES['fichier']
+		if csv_file is not None:
+			if csv_file.name.endswith('.csv'):
+				if csv_file.multiple_chunks() is False:
+					file_data = csv_file.read().decode("utf-8")
+					result = import_event_from_csv(file_data)
+					return render(request, 'event_list.html', context)
+				else:
+					return HttpResponse('Fichier trop lourd !')
+			else:
+				return HttpResponse('Erreur de fichier !')
+	return render(request, 'file_import.html', context)
 
