@@ -55,6 +55,50 @@ def import_csv_ev(fichier,nom_classe):
 				else:
 					pass
 
+
+def import_site_from_csv(fichier):
+	lignes = fichier.replace("\r","").split('\n')
+	line_count = 0
+	new_line_count = 0
+	edited_line_count = 0
+	for ligne in lignes:
+		if line_count == 0:
+			header=ligne.split(",")
+			line_count += 1
+			print('Entete colonne',header)
+		else:
+			row=list(ligne.split(","))
+			if len(row) == 17:
+				try:
+					site = Site.objects.get(code=row[0])
+					site.code=row[0]
+					site.type_site=row[1]
+					site.titre=row[2]
+					site.sigle=row[3]
+					site.region=row[4]
+					site.departement=row[5]
+					site.commune=row[6]
+					site.adresse=row[7]
+					site.pepfar=row[8]
+					site.contact_1=row[9]
+					site.tel_1=row[10]
+					site.contact_2=row[11]
+					site.tel_2=row[12]
+					site.fai=row[13]
+					site.internet=row[14]
+					site.isante=row[15]
+					site.fingerprint=row[16]
+					site.save()
+					edited_line_count += 1
+				except Site.DoesNotExist:
+					new_site = Site(code=row[0],type_site=row[1],nom=row[2],sigle=row[3],region=row[4],departement=row[5]\
+					,commune=row[6],adresse=row[7],pepfar=row[8],contact_1=row[9],tel_1=row[10]\
+					,contact_2=row[11],tel_2=row[12],fai=row[13],internet=row[14],isante=row[15],fingerprint=row[16])
+					new_site.save()
+					new_line_count += 1
+				line_count += 1
+	return line_count
+
 def format_form_field(form):
 	for f in form:
 		if not isinstance(f.field.widget, forms.SelectDateWidget):

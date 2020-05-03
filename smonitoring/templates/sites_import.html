@@ -1,7 +1,7 @@
 <!-- Import sites Modal -->
 <div class="modal fade" id="importSiteModal" tabindex="-1" role="dialog" aria-labelledby="importSiteModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-	<form method="post" action="{% url 'import_sites' %}" >{% csrf_token%}
+	<form method="post" action="{% url 'import_sites' %}" enctype="multipart/form-data">{% csrf_token%}
 		<div class="modal-content">
 		  <div class="modal-header">
 			<h5 class="modal-title" id="importSiteModalLabel">Importer Fichier</h5>

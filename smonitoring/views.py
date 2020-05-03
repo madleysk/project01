@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.db.models import Count, ExpressionWrapper
 from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, RegistrationForm
 from .models import Site,Evenement
-from .fonctions import import_csv_ev,format_form_field, pagination_format
+from .fonctions import import_csv_ev,format_form_field, pagination_format,import_site_from_csv
 from datetime import datetime
 from django.db import connection
 
@@ -185,7 +185,13 @@ def import_sites(request):
 	"""Import sites from csv file"""
 	if request.method == 'POST':
 		# import commands
-		pass
+		csv_file = request.FILES['fichier']
+		if csv_file is not None:
+			if csv_file.name.endswith('.csv'):
+				file_data = csv_file.read().decode("utf-8")
+				result = import_site_from_csv(file_data)
+			else:
+				return HttpResponse('Erreur de fichier !')
 	return HttpResponseRedirect(reverse('list_sites'))
 
 @login_required
