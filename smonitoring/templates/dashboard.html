@@ -119,7 +119,7 @@ font-weight: bold;
 document.addEventListener('DOMContentLoaded', function(){
 	//Filter script
 	document.getElementById("filter").onchange= function(){
-		var current_url= "{{ 'index' }}";
+		var current_url= "{{ 'home' }}";
 		var val= this.value;
 		window.location.replace(current_url+'?filter='+val);
 		};
