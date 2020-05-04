@@ -203,7 +203,10 @@ def import_sites(request):
 
 	if request.method == 'POST':
 		# import commands
-		csv_file = request.FILES['fichier']
+		try:
+			csv_file = request.FILES['fichier']
+		except:
+			return HttpResponse('Something when wrong')
 		if csv_file is not None:
 			if csv_file.name.endswith('.csv'):
 				if csv_file.multiple_chunks() is False:
@@ -354,8 +357,10 @@ def import_events(request):
 	
 	if request.method == 'POST':
 		# import commands
-		csv_file = request.FILES['fichier']
-		print(type(csv_file))
+		try:
+			csv_file = request.FILES['fichier']
+		except:
+			return HttpResponse('Something when wrong')
 		if csv_file is not None:
 			if csv_file.name.endswith('.csv'):
 				if csv_file.multiple_chunks() is False:
