@@ -28,7 +28,7 @@
 		{% if user.is_authenticated %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			Evénement
+			<span class="fa fa-flag">&nbsp;</span>Evénement
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 			  <a class="dropdown-item" href="{% url 'add_event' %}"><span class="fa fa-check-square-o">&nbsp;</span>Nouvel Evénement</a>
@@ -38,28 +38,28 @@
 		{% if user.is_staff %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			Administration
+			<span class="fa fa-tasks">&nbsp;</span>Administration
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-			  <a class="dropdown-item" href="{% url 'import_events' %}">Importer événements</a>
-			  <a class="dropdown-item" href="{% url 'list_events' %}">Liste événements</a>
+			  <a class="dropdown-item" href="{% url 'import_events' %}"><span class="fa fa-upload">&nbsp;</span>Importer événements</a>
+			  <a class="dropdown-item" href="{% url 'list_events' %}"><span class="fa fa-list-alt">&nbsp;</span>Liste événements</a>
 			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="#">Ajouter utilisateur</a>
-			  <a class="dropdown-item" href="#">Liste utilisateurs</a>
+			  <a class="dropdown-item" href="#"><span class="fa fa-user-plus">&nbsp;</span>Ajouter utilisateur</a>
+			  <a class="dropdown-item" href="#"><span class="fa fa-list-alt">&nbsp;</span>Liste utilisateurs</a>
 			  <div class="dropdown-divider"></div>
-			  <a class="dropdown-item" href="{% url 'add_site' %}">Ajouter site</a>
-			  <a class="dropdown-item" href="{% url 'import_sites' %}" >Importer sites</a>
-			  <a class="dropdown-item" href="{% url 'list_sites' %}">Liste sites</a>
+			  <a class="dropdown-item" href="{% url 'add_site' %}"><span class="fa fa-hospital-o">&nbsp;</span>Ajouter site</a>
+			  <a class="dropdown-item" href="{% url 'import_sites' %}" ><span class="fa fa-upload">&nbsp;</span>Importer sites</a>
+			  <a class="dropdown-item" href="{% url 'list_sites' %}"><span class="fa fa-list-alt">&nbsp;</span>Liste sites</a>
 			  <div class="dropdown-divider"></div>
 			  <a class="dropdown-item" href="{{ '/admin' }}"><span class="fa fa-cogs">&nbsp;</span>Admin Panel</a>
 			</div>
 		</li>
 		{% endif %}
 		  <li class="nav-item">
-			<a class="nav-link" href="#">Contact</a>
+			<a class="nav-link" href="#"><span class="fa fa-address-card-o">&nbsp;</span>Contact</a>
 		  </li>
 		  <li class="nav-item">
-			<a class="nav-link" href="#" title="Foire aux questions" >FAQ</a>
+			<a class="nav-link" href="#" title="Foire aux questions" ><span class="fa fa-question-circle-o">&nbsp;</span>FAQ</a>
 		  </li>
 		</ul>
 		<div class="pull-right">
