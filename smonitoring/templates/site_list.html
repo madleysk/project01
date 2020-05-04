@@ -25,4 +25,13 @@
 		</table>
 	</div>
 	<div>{% include "_paginationhelpers.html" %}</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+	//keeping search value in the searchbox
+	var queryString= window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	var search = document.querySelector('#search');
+	search.value = urlParams.get('search');
+	});
+</script>
 {% endblock %}

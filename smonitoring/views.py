@@ -207,12 +207,21 @@ def import_sites(request):
 		if csv_file is not None:
 			if csv_file.name.endswith('.csv'):
 				if csv_file.multiple_chunks() is False:
-					file_data = csv_file.read().decode("utf-8")
-					result = import_site_from_csv(file_data)
-					context['msg_success']= f'{result["new"]} ligne(s) inserée(s), {result["edit"]} modifiée(s)'
-					return render(request, 'file_import.html', context)
+					try:
+						file_data = csv_file.read().decode("utf-8")
+						result = import_site_from_csv(file_data)
+						context['msg_success']= f'{result["new"]} ligne(s) inserée(s), {result["edit"]} modifiée(s)'
+						return render(request, 'file_import.html', context)
+					except UnicodeDecodeError:
+						context['msg_error']= 'Erreur de decodage de fichier.' 
+						context['msg_info']= 'Veuillez convertir le fichier en utf-8.' 
+						return render(request, 'file_import.html', context)
+					except:
+						context['msg_error']= 'Erreur inconnue.' 
+						return render(request, 'file_import.html', context)
 				else:
-					return HttpResponse('Fichier trop lourd !')
+					context['msg_error']= 'Fichier trop lourd !.' 
+					return render(request, 'file_import.html', context)
 			else:
 				return HttpResponse('Erreur de fichier !')
 	return render(request, 'file_import.html', context)
@@ -344,15 +353,25 @@ def import_events(request):
 	if request.method == 'POST':
 		# import commands
 		csv_file = request.FILES['fichier']
+		print(type(csv_file))
 		if csv_file is not None:
 			if csv_file.name.endswith('.csv'):
 				if csv_file.multiple_chunks() is False:
-					file_data = csv_file.read().decode("utf-8")
-					result = import_event_from_csv(file_data)
-					context['msg_success']= f'{result["new"]} ligne(s) inserée(s)' 
-					return render(request, 'file_import.html', context)
+					try:
+						file_data = csv_file.read().decode("utf-8")
+						result = import_event_from_csv(file_data)
+						context['msg_success']= f'{result["new"]} ligne(s) inserée(s)' 
+						return render(request, 'file_import.html', context)
+					except UnicodeDecodeError:
+						context['msg_error']= 'Erreur de decodage de fichier.' 
+						context['msg_info']= 'Veuillez convertir le fichier en utf-8.' 
+						return render(request, 'file_import.html', context)
+					except:
+						context['msg_error']= 'Erreur inconnue.' 
+						return render(request, 'file_import.html', context)
 				else:
-					return HttpResponse('Fichier trop lourd !')
+					context['msg_error']= 'Fichier trop lourd !.' 
+					return render(request, 'file_import.html', context)
 			else:
 				return HttpResponse('Erreur de fichier !')
 	return render(request, 'file_import.html', context)
