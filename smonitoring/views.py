@@ -48,7 +48,7 @@ def index(request):
 			for t in top_bad_sites:
 				top_bad_sites_formated.append({"qte":t[0],"id":t[1],"nom":t[2]})
 		context= {
-			"page_title":"Ma page Accueil",
+			"page_title":"Site Monitoring - Accueil",
 			"internet_status":{"up":Site.objects.filter(internet="up").count(),"down":Site.objects.filter(internet="down").count()},
 			"isante_status":{"up":Site.objects.filter(isante="up").count(),"down":Site.objects.filter(isante="down").count()},
 			"fingerprint_status":{"up":Site.objects.filter(fingerprint="up").count(),"down":Site.objects.filter(fingerprint="down").count()},
