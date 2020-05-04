@@ -80,7 +80,7 @@ def login_view(request):
 		user = authenticate(request,  username=username, password=passwd)
 		if user is not None:
 			login(request, user)
-			return HttpResponseRedirect(reverse("index"))
+			return HttpResponseRedirect(reverse("home"))
 		else:
 			context['errors']= 'Erreur de mot de passe ou nom utilisateur.'
 	return render(request, 'login.html', context)
@@ -223,7 +223,9 @@ def import_sites(request):
 					context['msg_error']= 'Fichier trop lourd !.' 
 					return render(request, 'file_import.html', context)
 			else:
-				return HttpResponse('Erreur de fichier !')
+				context['msg_error']= 'Type de fichier non permis.' 
+				context['msg_info']= 'Seulement les fichiers csv sont permis.' 
+				return render(request, 'file_import.html', context)
 	return render(request, 'file_import.html', context)
 
 @login_required
@@ -373,6 +375,8 @@ def import_events(request):
 					context['msg_error']= 'Fichier trop lourd !.' 
 					return render(request, 'file_import.html', context)
 			else:
-				return HttpResponse('Erreur de fichier !')
+				context['msg_error']= 'Type de fichier non permis.' 
+				context['msg_info']= 'Seulement les fichiers csv sont permis.' 
+				return render(request, 'file_import.html', context)
 	return render(request, 'file_import.html', context)
 
