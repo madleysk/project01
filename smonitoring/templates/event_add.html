@@ -7,7 +7,7 @@
 		font-weight: bold;
 		}
 </style>
-<form method="POST" >{% csrf_token%}
+<form id="eventForm" method="POST" >{% csrf_token%}
 	<div class="row">
 	{% include "_formhelpers.html" %}
 	</div>
@@ -32,7 +32,6 @@
 				<div style="display:inline-block">
 				<strong>Raison</strong>
 				<select name="raison_isante" class="form-control">
-					<option value="">Sélectionner</option>
 					<option value="0">N/A</option>
 					<option value="1">Problème FAI</option>
 					<option value="2">Problème Interne</option>
@@ -54,7 +53,6 @@
 				<div style="display:inline-block">
 				<strong>Raison</strong>
 				<select name="raison_fingerprint" class="form-control">
-					<option value="">Sélectionner</option>
 					<option value="0">N/A</option>
 					<option value="1">Problème FAI</option>
 					<option value="2">Problème Interne</option>
@@ -78,26 +76,22 @@ document.addEventListener('DOMContentLoaded', function(){
 				document.querySelector("#serveurs_status").style.display='';
 				let ent_stat = document.getElementById("id_entite_concerne");
 				ent_stat.selectedIndex=1;
-				//ent_stat.disabled=true;
+				ent_stat.disabled=true;
 				this.value='yes';
 			}
 		else{
 				document.querySelector("#serveurs_status").setAttribute('class','invisible');
 				document.querySelector("#serveurs_status").style.display='none';
 				let ent_stat = document.getElementById("id_entite_concerne");
-				//ent_stat.disabled=false;
+				ent_stat.disabled=false;
 				this.value='no';
 			}
 		};
-	document.querySelectorAll("p").forEach(function(p){
-			//p.setAttribute('class','form-group col-md-6');
-		});
-	document.querySelectorAll("input").forEach(function(input){
-			//input.setAttribute('class','form-control');
-		});
-	document.querySelectorAll("select").forEach(function(select){
-			//select.setAttribute('class','form-control');
-		});
+	document.getElementById("eventForm").onsubmit=function(){
+			let ent_stat = document.getElementById("id_entite_concerne");
+			ent_stat.disabled=false;
+			return true;
+		};
 	});
 </script>
 {% endblock %}

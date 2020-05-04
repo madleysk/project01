@@ -49,19 +49,19 @@ class SiteForm(forms.Form):
 	type_site = forms.ChoiceField(choices=[('','----------'),('site','Site'),('bureau','Bureau')])
 	nom = forms.CharField(max_length=100)
 	sigle = forms.CharField(required=False, max_length=100)
-	region = forms.ChoiceField(choices=LISTE_REGIONS)
-	departement = forms.ChoiceField(choices=LISTE_DEPTS)
+	region = forms.ChoiceField(label='Région',choices=LISTE_REGIONS)
+	departement = forms.ChoiceField(label='Département',choices=LISTE_DEPTS)
 	commune = forms.CharField(required=False, max_length=100)
 	adresse = forms.CharField(required=False, max_length=100)
 	pepfar = forms.ChoiceField(choices=[('','----------'),('oui','Oui'),('non','Non')])
-	contact_1 = forms.CharField(max_length=100)
-	tel_1 = forms.CharField(max_length=100)
-	contact_2 = forms.CharField(required=False, max_length=100)
-	tel_2 = forms.CharField(required=False, max_length=100)
+	contact_1 = forms.CharField(label='Personne de contact 1',max_length=100)
+	tel_1 = forms.CharField(label='Numero de téléphone',max_length=100)
+	contact_2 = forms.CharField(label='Personne de contact 2',required=False, max_length=100)
+	tel_2 = forms.CharField(label='Numero de téléphone',required=False, max_length=100)
 	fai = forms.ChoiceField(label='Fournisseur',choices=LISTE_FAI)
-	internet = forms.ChoiceField(choices=EL_STATUS)
-	isante = forms.ChoiceField(choices=EL_STATUS)
-	fingerprint = forms.ChoiceField(label='Status',choices=EL_STATUS)
+	internet = forms.ChoiceField(label='Status Connexion Internet',choices=EL_STATUS)
+	isante = forms.ChoiceField(label='Status Serveur isante',choices=EL_STATUS)
+	fingerprint = forms.ChoiceField(label='Status Serveur Fingerprint',choices=EL_STATUS)
 	
 	def clean(self):
 		super(SiteForm, self).clean()
@@ -92,11 +92,11 @@ class EvenementForm(forms.Form):
 	RAISON_CHOICES= [('','----------'),('0','N/A'),('1','Problème FAI'),('2','Problème Interne'),('3','Problème non identifié'),('4','Source non identifiée')]
 	ENTITE_CHOICES = [('','----------'),('internet','Internet'),('isante','Isante Server'),('fingerprint','Fingerprint Server')]
 	code_site = forms.ChoiceField(label='Site')
-	entite_concerne = forms.ChoiceField(choices=ENTITE_CHOICES) # internet, isante or fingerprint
+	entite_concerne = forms.ChoiceField(label='Entité concernée',choices=ENTITE_CHOICES) # internet, isante or fingerprint
 	status_ev = forms.ChoiceField(label='Status',choices=EL_STATUS) # up, ,down, none
 	raison_ev = forms.ChoiceField(label='Raison',choices=RAISON_CHOICES)
-	date_ev = forms.DateField(label='Date evenement',widget=forms.SelectDateWidget(), initial=datetime.utcnow)
-	date_rap = forms.DateField(label='Date Rapportee',widget=forms.SelectDateWidget(), initial=datetime.utcnow)
+	date_ev = forms.DateField(label='Date événement',widget=forms.SelectDateWidget(), initial=datetime.utcnow)
+	date_rap = forms.DateField(label='Date Rapportée',widget=forms.SelectDateWidget(), initial=datetime.utcnow)
 	date_entree = forms.CharField(required= False, widget=forms.HiddenInput, initial=datetime.utcnow)
 	pers_contact = forms.CharField(required= False,label='Personne de contact',max_length=100)
 	remarques = forms.CharField(required= False,max_length=100)

@@ -15,7 +15,7 @@
 <body>
 	<!-- Menu -->
 	<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
-	  <a class="navbar-brand" href="{% url 'index' %}">Sante - SM</a>
+	  <a class="navbar-brand" href="{% url 'home' %}">Santé - SM</a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	  </button>
@@ -23,12 +23,12 @@
 	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 		<ul class="navbar-nav mr-auto">
 		  <li class="nav-item active">
-			<a class="nav-link" href="{% url 'index' %}"><span class="fa fa-home">&nbsp;</span>Accueil <span class="sr-only">(current)</span></a>
+			<a class="nav-link" href="{% url 'home' %}"><span class="fa fa-home">&nbsp;</span>Accueil <span class="sr-only">(current)</span></a>
 		  </li>
 		{% if user.is_authenticated %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			Evenement
+			Evénement
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 			  <a class="dropdown-item" href="{% url 'add_event' %}">Nouvel Evénement</a>
@@ -93,7 +93,7 @@
 		{% endblock body %}
 	</div>
 	<footer class="footer text-center mt-5">
-		<p class="">&copy; Projet Sante - 2020</p>
+		<p class="">&copy; Projet Santé - 2020</p>
 	</footer>
 
 	<!-- jQuery 3 -->
