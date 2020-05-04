@@ -175,7 +175,7 @@ def list_sites(request,page=1):
 	keyword= request.GET.get('search')
 	if keyword is not None:
 		# searching for the keywords
-		site_list = Site.objects.filter(Q(nom__contains=keyword) | Q(code__contains=keyword)).order_by('nom')
+		site_list = Site.objects.filter(Q(nom__icontains=keyword) | Q(code__icontains=keyword)).order_by('nom')
 		paginator = Paginator(site_list,PER_PAGE)
 		page_number = request.GET.get('page')
 		page_obj = paginator.get_page(page_number)
@@ -324,7 +324,7 @@ def list_events(request,page=1):
 	keyword= request.GET.get('search')
 	if keyword is not None:
 		event_list = Evenement.objects.select_related('code_site')\
-		.filter(Q(code_site__nom__contains=keyword) | Q(entite_concerne__contains=keyword)).order_by('-date_entree')
+		.filter(Q(code_site__nom__icontains=keyword) | Q(entite_concerne__icontains=keyword)).order_by('-date_entree')
 		paginator = Paginator(event_list, PER_PAGE)
 		page_number = request.GET.get('page')
 		page_obj = paginator.get_page(page_number)
