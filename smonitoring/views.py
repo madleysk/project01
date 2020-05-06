@@ -28,7 +28,7 @@ def index(request):
 			filtre = None
 
 		with connection.cursor() as cursor:
-			cursor.execute("SELECT COUNT(*) as qte,code_site_id,nom,nom_region from smonitoring_evenement e, smonitoring_site s, smonitoring_region r WHERE (e.code_site_id=s.id) AND (s.region_id=r.id) AND (e.status_ev=%s) AND (r.nom_region=%s) GROUP BY e.code_site_id,s.nom ORDER BY qte DESC LIMIT 5",params=['down',filtre.nom_region])
+			cursor.execute("SELECT COUNT(*) as qte,code_site_id,nom,nom_region from smonitoring_evenement e, smonitoring_site s, smonitoring_region r WHERE (e.code_site_id=s.id) AND (s.region_id=r.id) AND (e.status_ev=%s) AND (r.nom_region=%s) GROUP BY e.code_site_id,s.nom,r.nom_region ORDER BY qte DESC LIMIT 5",params=['down',filtre.nom_region])
 			top_bad_sites = cursor.fetchall()
 			top_bad_sites_formated = []
 			for t in top_bad_sites:
