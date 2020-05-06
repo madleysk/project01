@@ -1,11 +1,12 @@
 from django.db import models
 from django.forms import ModelForm
 from django import forms
-from .models import Site, Evenement
+from .models import Site, Evenement, RaisonsEvenement, Region, Departement
 from datetime import datetime
 #from django import Form
 
 EL_STATUS= [('','----------'),('up','Up'),('down','Down'),('none','Non installé')]
+LISTE_FAI = [('','----------'),('aucun','N/A'),('digicel','Digicel'),('natcom','Natcom'),('access','Access Haiti'),('hainet','Hainet')]
 
 class RegistrationForm(forms.Form):
 	username = forms.CharField(max_length=100)
@@ -42,15 +43,12 @@ class LoginForm(forms.Form):
 
 
 class SiteForm(forms.Form):
-	LISTE_REGIONS= [('','----------'),('centre','CENTRE'),('sud','SUD'),('nord','NORD')]
-	LISTE_DEPTS= [('','----------'),('Ouest','Ouest'),('Nord','Nord'),('Nord-Est','Nord-Est'),('Nord-Ouest','Nord-Ouest'),('Sud','Sud'),('Sud-Est','Sud-Est'),('Nippes','Nippes'),('Centre','Centre'),('Grand\'Anse','Grand\'Anse')]
-	LISTE_FAI = [('','----------'),('aucun','N/A'),('digicel','Digicel'),('natcom','Natcom'),('access','Access Haiti'),('hainet','Hainet')]
 	code = forms.CharField(max_length=100)
 	type_site = forms.ChoiceField(choices=[('','----------'),('site','Site'),('bureau','Bureau')])
 	nom = forms.CharField(max_length=100)
 	sigle = forms.CharField(required=False, max_length=100)
-	region = forms.ChoiceField(label='Région',choices=LISTE_REGIONS)
-	departement = forms.ChoiceField(label='Département',choices=LISTE_DEPTS)
+	region = forms.ChoiceField(label='Région')
+	departement = forms.ChoiceField(label='Département')
 	commune = forms.CharField(required=False, max_length=100)
 	adresse = forms.CharField(required=False, max_length=100)
 	pepfar = forms.ChoiceField(choices=[('','----------'),('oui','Oui'),('non','Non')])
@@ -89,12 +87,11 @@ class SiteEditForm(ModelForm):
 		'tel_2','fai','internet','isante','fingerprint']
 
 class EvenementForm(forms.Form):
-	RAISON_CHOICES= [('','----------'),('0','N/A'),('1','Problème FAI'),('2','Problème Interne'),('3','Problème non identifié'),('4','Source non identifiée')]
 	ENTITE_CHOICES = [('','----------'),('internet','Internet'),('isante','Isante Server'),('fingerprint','Fingerprint Server')]
 	code_site = forms.ChoiceField(label='Site')
 	entite_concerne = forms.ChoiceField(label='Entité concernée',choices=ENTITE_CHOICES) # internet, isante or fingerprint
 	status_ev = forms.ChoiceField(label='Status',choices=EL_STATUS) # up, ,down, none
-	raison_ev = forms.ChoiceField(label='Raison',choices=RAISON_CHOICES)
+	raison_ev = forms.ChoiceField(label='Raison')
 	date_ev = forms.DateField(label='Date événement',widget=forms.SelectDateWidget(), initial=datetime.utcnow)
 	date_rap = forms.DateField(label='Date Rapportée',widget=forms.SelectDateWidget(), initial=datetime.utcnow)
 	date_entree = forms.CharField(required= False, widget=forms.HiddenInput, initial=datetime.utcnow)

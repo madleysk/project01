@@ -1,4 +1,4 @@
-from .models import Site,Evenement
+from .models import *
 from datetime import datetime
 import csv
 from django import forms
@@ -35,13 +35,13 @@ def import_csv_ev(fichier,nom_classe):
 		if nom_classe == 'Evenement':
 			for evenement in lignes_contenu:
 				date_entree= timezone.now
-				code_utilisateur= '1001'
+				nom_utilisateur= '1001'
 				entite_concerne=evenement[2].lower()
 				status_ev = evenement[3].lower()
 				#date_ev=evenement[4]
 				#date_rap=evenement[6]
 				site = Site.objects.get(code=evenement[0])
-				new_event= Evenement(code_site=site,entite_concerne=entite_concerne.lower(),status_ev=evenement[3].lower(),date_ev=datetime.strptime(evenement[4], '%Y/%M/%d'),raison_ev=evenement[5],date_rap=datetime.strptime(evenement[6], '%Y/%M/%d'),pers_contact=evenement[7],remarques=evenement[8],date_entree=date_entree,code_utilisateur=code_utilisateur)
+				new_event= Evenement(code_site=site,entite_concerne=entite_concerne.lower(),status_ev=evenement[3].lower(),date_ev=datetime.strptime(evenement[4], '%Y/%M/%d'),raison_ev=evenement[5],date_rap=datetime.strptime(evenement[6], '%Y/%M/%d'),pers_contact=evenement[7],remarques=evenement[8],date_entree=date_entree,nom_utilisateur=nom_utilisateur)
 				new_event.save()
 				# updating element status
 				if entite_concerne.lower() == 'internet':
@@ -71,36 +71,42 @@ def import_site_from_csv(fichier):
 			row=list(ligne.replace('"','').replace("'",'').split(","))
 			if len(row) == 17:
 				try:
+					region = Region.objects.get(code=row[4].upper())
+					departement = Departement.objects.get(code=row[5].upper())
 					site = Site.objects.get(code=row[0])
 					site.code=row[0]
-					site.type_site=row[1]
+					site.type_site=row[1].lower()
 					site.titre=row[2]
 					site.sigle=row[3]
-					site.region=row[4]
-					site.departement=row[5]
+					site.region=region
+					site.departement=departement
 					site.commune=row[6]
 					site.adresse=row[7]
-					site.pepfar=row[8]
+					site.pepfar=row[8].lower()
 					site.contact_1=row[9]
 					site.tel_1=row[10]
 					site.contact_2=row[11]
 					site.tel_2=row[12]
-					site.fai=row[13]
-					site.internet=row[14]
-					site.isante=row[15]
-					site.fingerprint=row[16]
+					site.fai=row[13].lower()
+					site.internet=row[14].lower()
+					site.isante=row[15].lower()
+					site.fingerprint=row[16].lower()
 					site.save()
 					edited_line_count += 1
 				except Site.DoesNotExist:
-					new_site = Site(code=row[0],type_site=row[1],nom=row[2],sigle=row[3],region=row[4],departement=row[5]\
-					,commune=row[6],adresse=row[7],pepfar=row[8],contact_1=row[9],tel_1=row[10]\
-					,contact_2=row[11],tel_2=row[12],fai=row[13],internet=row[14],isante=row[15],fingerprint=row[16])
+					new_site = Site(code=row[0],type_site=row[1].lower(),nom=row[2],sigle=row[3],region=region,departement=departement\
+					,commune=row[6],adresse=row[7],pepfar=row[8].lower(),contact_1=row[9],tel_1=row[10]\
+					,contact_2=row[11],tel_2=row[12],fai=row[13].lower(),internet=row[14].lower(),isante=row[15].lower(),fingerprint=row[16].lower())
 					new_site.save()
 					new_line_count += 1
+				except Region.DoesNotExist:
+					pass
+				except Departement.DoesNotExist:
+					pass
 				line_count += 1
 
-	print(f"{new_line_count} nouvelles lignes, {edited_line_count} modifiees sur un total de {line_count-1} lignes.")
-	result= {"new":new_line_count,"edit":edited_line_count,"total":line_count}
+	#print(f"{new_line_count} nouvelles lignes, {edited_line_count} modifiees sur un total de {line_count-1} lignes.")
+	result= {"new":new_line_count,"edit":edited_line_count,"total":line_count-1}
 	return result
 
 def import_event_from_csv(fichier):
@@ -118,21 +124,27 @@ def import_event_from_csv(fichier):
 			if len(ligne) > 6 and len(ligne) <= 9:
 				code_site= None
 				date_entree=timezone.now()
-				code_utilisateur= '1001'
+				nom_utilisateur= '1001'
 				entite_concerne=''
 				status_ev = ''
 				site = None
+				raison = None
 				for evenement in ligne:
 					code_site = ligne[0]
 					entite_concerne=ligne[2].lower()
 					status_ev = ligne[3].lower()
 				try:
+					raison = RaisonsEvenement.objects.get(desc_ev=ligne[5])
+				except RaisonsEvenement.DoesNotExist:
+					raison = RaisonsEvenement.objects.get(pk=1)
+				try:
 					site = Site.objects.get(code=ligne[0])
-					new_event= Evenement(code_site=site,entite_concerne=entite_concerne.lower(),status_ev=ligne[3].lower(),date_ev=datetime.strptime(ligne[4], '%Y/%M/%d'),raison_ev=ligne[5],date_rap=datetime.strptime(ligne[6], '%Y/%M/%d'),pers_contact=ligne[7],remarques=ligne[8],date_entree=date_entree,code_utilisateur=code_utilisateur)
+					new_event= Evenement(code_site=site,entite_concerne=entite_concerne.lower(),status_ev=ligne[3].lower(),date_ev=datetime.strptime(ligne[4], '%Y/%M/%d'),raison_ev=raison,date_rap=datetime.strptime(ligne[6], '%Y/%M/%d'),pers_contact=ligne[7],remarques=ligne[8],date_entree=date_entree,nom_utilisateur=nom_utilisateur)
 					new_event.save()
 					new_line_count += 1
 				except Site.DoesNotExist:
-					raise Site.DoesNotExist('Il y a un probleme avec le fichier.')
+					raise Site.DoesNotExist('Il y a un probleme avec le fichier. Verifier la colonne code site.')
+
 				line_count += 1
 				# updating element status
 				if entite_concerne.lower() == 'internet':
@@ -146,7 +158,7 @@ def import_event_from_csv(fichier):
 					site.save()
 				else:
 					pass
-	result= {"new":new_line_count,"total":line_count}
+	result= {"new":new_line_count,"total":line_count-1}
 	return result
 
 def format_form_field(form):

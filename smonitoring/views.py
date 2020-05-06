@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.db.models import Count, ExpressionWrapper
 from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, RegistrationForm
-from .models import Site,Evenement
+from .models import Site,Evenement, Region, Departement, RaisonsEvenement
 from .fonctions import import_csv_ev,format_form_field, pagination_format,import_site_from_csv,import_event_from_csv
 from datetime import datetime
 from django.db import connection
@@ -108,12 +108,16 @@ def subscribe(request):
 
 @login_required
 def add_site(request):
+	LISTE_REGIONS= [('','----------')] +[(r.id,r.nom_region) for r in Region.objects.all().order_by('nom_region')]
+	LISTE_DEPTS= [('','----------')] +[(d.id,d.nom_departement) for d in Departement.objects.all().order_by('nom_departement')]
 	context= {
 		"page_title":"Ajouter Site",
 	}
 	#import_csv_ev('smonitoring/uploaded/liste_sites.csv','Site')
 	if request.method == 'POST':
 		form = SiteForm(request.POST)
+		form.fields['region'].choices = LISTE_REGIONS
+		form.fields['departement'].choices = LISTE_DEPTS
 		format_form_field(form)
 		
 		if form.is_valid():
@@ -121,9 +125,12 @@ def add_site(request):
 			# get form submitted values and add them to the list
 			for field in form.cleaned_data:
 				vals.append(form.cleaned_data[field])
+			# Getting the necessary instances
+			region = Region.objects.get(pk=vals[4])
+			dept = Departement.objects.get(pk=vals[5])
 			# Creating new site object and save it to the database
 			new_site = Site(code=vals[0],type_site=vals[1],nom=vals[2]\
-			,sigle=vals[3],region=vals[4],departement=vals[5],commune=vals[6]\
+			,sigle=vals[3],region=region,departement=dept,commune=vals[6]\
 			,adresse=vals[7],pepfar=vals[8],contact_1=vals[9],tel_1=vals[10],contact_2=vals[11]\
 			,tel_2=vals[12],fai=vals[13],internet=vals[15],isante=vals[15],fingerprint=vals[16])
 			new_site.save()	
@@ -131,6 +138,8 @@ def add_site(request):
 			return HttpResponseRedirect(reverse('list_sites'))
 	else:
 		form = SiteForm(None)
+		form.fields['region'].choices = LISTE_REGIONS
+		form.fields['departement'].choices = LISTE_DEPTS
 		format_form_field(form)
 	
 	context['form']=form
@@ -213,7 +222,7 @@ def import_sites(request):
 					try:
 						file_data = csv_file.read().decode("utf-8")
 						result = import_site_from_csv(file_data)
-						context['msg_success']= f'{result["new"]} ligne(s) inserée(s), {result["edit"]} modifiée(s)'
+						context['msg_success']= f'{result["new"]} ligne(s) inserée(s), {result["edit"]} modifiée(s) sur {result["total"]} ligne(s).'
 						return render(request, 'file_import.html', context)
 					except UnicodeDecodeError:
 						context['msg_error']= 'Erreur de decodage de fichier.' 
@@ -238,10 +247,12 @@ def add_event(request):
 	}
 	#import_csv_ev('smonitoring/uploaded/complete_event_list.csv','Evenement')
 	LISTE_SITES=[('','----------')]+[(s.id,s.nom) for s in Site.objects.order_by('nom').all()]
+	RAISON_CHOICES= [('','----------')] +[(r.id,r.desc_ev) for r in RaisonsEvenement.objects.all().order_by('desc_ev')]
 	if request.method == 'POST':
 		new_event = form = EvenementForm(request.POST)
 		new_event.fields['code_site'].choices = LISTE_SITES
-		new_event.date_entree=datetime.now()
+		new_event.fields['raison_ev'].choices = RAISON_CHOICES
+		new_event.date_entree=timezone.now
 		
 			
 		if new_event.is_valid():
@@ -249,16 +260,16 @@ def add_event(request):
 			entite_concerne=new_event.cleaned_data['entite_concerne']
 			status_ev=new_event.cleaned_data['status_ev']
 			date_ev= new_event.cleaned_data['date_ev']
-			raison_ev= new_event.cleaned_data['raison_ev']
+			raison_ev= RaisonsEvenement.objects.get(pk= new_event.cleaned_data['raison_ev'])
 			date_rap= new_event.cleaned_data['date_rap']
 			pers_contact= new_event.cleaned_data['pers_contact']
 			remarques= new_event.cleaned_data['remarques']
-			date_entree = datetime.now()
-			code_utilisateur = '1001'
+			date_entree = timezone.now
+			nom_utilisateur = '1001'
 			site = Site.objects.get(pk=code_site)
 			new_event = Evenement(code_site=site,entite_concerne=entite_concerne,status_ev=status_ev\
 			,date_ev=date_ev,raison_ev=raison_ev,date_rap=date_rap,date_entree=date_entree,pers_contact=pers_contact\
-			,remarques=remarques,code_utilisateur=code_utilisateur)
+			,remarques=remarques,nom_utilisateur=nom_utilisateur)
 			new_event.save()
 			# updating element status
 			if entite_concerne.lower() == 'internet':
@@ -278,14 +289,14 @@ def add_event(request):
 				if isante_status:
 					new_event = Evenement(code_site=site,entite_concerne='isante',status_ev=isante_status\
 					,date_ev=date_ev,raison_ev=raison_isante,date_rap=date_rap,date_entree=date_entree,pers_contact=pers_contact\
-					,remarques=remarques,code_utilisateur=code_utilisateur)
+					,remarques=remarques,nom_utilisateur=nom_utilisateur)
 					new_event.save()
 					site.isante = isante_status
 					site.save()
 				if fingerprint_status:
 					new_event = Evenement(code_site=site,entite_concerne='fingerprint',status_ev=fingerprint_status\
 					,date_ev=date_ev,raison_ev=raison_fingerprint,date_rap=date_rap,date_entree=date_entree,pers_contact=pers_contact\
-					,remarques=remarques,code_utilisateur=code_utilisateur)
+					,remarques=remarques,nom_utilisateur=nom_utilisateur)
 					new_event.save()
 					site.fingerprint = fingerprint_status
 					site.save()
@@ -294,6 +305,7 @@ def add_event(request):
 	else:
 		form = EvenementForm(None)
 		form.fields['code_site'].choices = LISTE_SITES
+		form.fields['raison_ev'].choices = RAISON_CHOICES
 		format_form_field(form)
 
 	context['form'] = form
@@ -367,7 +379,7 @@ def import_events(request):
 					try:
 						file_data = csv_file.read().decode("utf-8")
 						result = import_event_from_csv(file_data)
-						context['msg_success']= f'{result["new"]} ligne(s) inserée(s)' 
+						context['msg_success']= f'{result["new"]} ligne(s) inserée(s) sur {result["total"]} ligne(s).' 
 						return render(request, 'file_import.html', context)
 					except UnicodeDecodeError:
 						context['msg_error']= 'Erreur de decodage de fichier.' 
