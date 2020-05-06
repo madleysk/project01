@@ -34,7 +34,7 @@ def import_csv_ev(fichier,nom_classe):
 			db.session.commit()"""
 		if nom_classe == 'Evenement':
 			for evenement in lignes_contenu:
-				date_entree= timezone.now
+				date_entree= timezone.now()
 				nom_utilisateur= '1001'
 				entite_concerne=evenement[2].lower()
 				status_ev = evenement[3].lower()

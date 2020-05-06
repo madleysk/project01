@@ -9,6 +9,7 @@ from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, Regi
 from .models import Site,Evenement, Region, Departement, RaisonsEvenement
 from .fonctions import import_csv_ev,format_form_field, pagination_format,import_site_from_csv,import_event_from_csv
 from datetime import datetime
+from django.utils import timezone as timezone
 from django.db import connection
 from django.db.models import Q # for complex queries
 
@@ -258,7 +259,7 @@ def add_event(request):
 		new_event = form = EvenementForm(request.POST)
 		new_event.fields['code_site'].choices = LISTE_SITES
 		new_event.fields['raison_ev'].choices = RAISON_CHOICES
-		new_event.date_entree=timezone.now
+		new_event.date_entree= timezone.now()
 		
 			
 		if new_event.is_valid():
@@ -270,7 +271,7 @@ def add_event(request):
 			date_rap= new_event.cleaned_data['date_rap']
 			pers_contact= new_event.cleaned_data['pers_contact']
 			remarques= new_event.cleaned_data['remarques']
-			date_entree = timezone.now
+			date_entree = timezone.now()
 			nom_utilisateur = '1001'
 			site = Site.objects.get(pk=code_site)
 			new_event = Evenement(code_site=site,entite_concerne=entite_concerne,status_ev=status_ev\
