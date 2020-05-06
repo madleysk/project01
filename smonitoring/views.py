@@ -33,7 +33,7 @@ def index(request):
 			top_bad_sites_formated = []
 			for t in top_bad_sites:
 				top_bad_sites_formated.append({"qte":t[0],"id":t[1],"nom":t[2]})
-			print(top_bad_sites)
+
 		context= {
 			"page_title":"Site Monitoring - Accueil",
 			"internet_status":{"up":Site.objects.filter(internet="up",region=filtre).count(),"down":Site.objects.filter(internet="down",region=filtre).count()},
