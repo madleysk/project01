@@ -12,7 +12,7 @@ urlpatterns = [
 	path("add_site/",views.add_site,name="add_site"),
 	path("import_sites/",views.import_sites,name="import_sites"),
 	path("edit_site/<int:id_site>",views.edit_site,name="edit_site"),
-	path("site/<int:id_site>",views.site,name="site"),
+	path("view_site/<int:id_site>",views.view_site,name="view_site"),
 	path("list_sites/",views.list_sites,name="list_sites"),
 	path("list_sites/page/<int:page>",views.list_sites,name="list_sites"),
 	
@@ -21,4 +21,6 @@ urlpatterns = [
 	path("edit_event/<int:id_event>",views.edit_event,name="edit_event"),
 	path("list_events/",views.list_events,name="list_events"),
 	path("list_events/page/<int:page>",views.list_events,name="list_events"),
+	
+	path("site_stats/<int:id_site>/<str:comp>",views.site_stats,name="site_stats"),
 ]

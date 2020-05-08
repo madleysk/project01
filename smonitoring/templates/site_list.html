@@ -16,7 +16,7 @@
 				<tr>
 					<td>{{site.code}}</td><td>{{site.nom}}</td><td>{{site.region}}</td><td>{{site.departement}}</td><td>{{site.contact_1}}</td><td>{{site.tel_1}}</td>
 					<td>
-						<a href="#" class="btn btn-info btn-sm"><span class="fa fa-eye" title="Voir"></span></a>
+						<a href="{% url 'view_site' site.id %}" class="btn btn-info btn-sm"><span class="fa fa-eye" title="Voir"></span></a>
 						<a href="{% url 'edit_site' site.id %}" class="btn btn-warning btn-sm"><span class="fa fa-pencil" title="Modifier"></span></a>
 					</td>
 				</tr>

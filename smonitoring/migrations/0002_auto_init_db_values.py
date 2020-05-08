@@ -29,10 +29,16 @@ def init_bd_values(apps,schema_editor):
 	RaisonsEvenement.objects.create(code_ev='',desc_ev='N/A')
 	RaisonsEvenement.objects.create(code_ev='',desc_ev='Problème FAI')
 	RaisonsEvenement.objects.create(code_ev='',desc_ev='Problème Interne')
-	RaisonsEvenement.objects.create(code_ev='',desc_ev='Problème non identifié')
+	RaisonsEvenement.objects.create(code_ev='',desc_ev='Problème interne non identifié')
 	RaisonsEvenement.objects.create(code_ev='',desc_ev='Source non identifié')
 	RaisonsEvenement.objects.create(code_ev='',desc_ev='Problème Routeur')
-	RaisonsEvenement.objects.create(code_ev='',desc_ev='Problème Eléctrique')
+	RaisonsEvenement.objects.create(code_ev='',desc_ev='Problème Eléctricité')
+	RaisonsEvenement.objects.create(code_ev='',desc_ev='UPS Disfonctionnel')
+	RaisonsEvenement.objects.create(code_ev='',desc_ev='Config. Instable')
+	RaisonsEvenement.objects.create(code_ev='',desc_ev='Internet Lent')
+	RaisonsEvenement.objects.create(code_ev='',desc_ev='Installation Incomplete')
+	RaisonsEvenement.objects.create(code_ev='',desc_ev='Non Installé')
+	RaisonsEvenement.objects.create(code_ev='',desc_ev='Non mentioné')
 
 class Migration(migrations.Migration):
 

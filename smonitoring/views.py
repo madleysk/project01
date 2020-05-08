@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect,JsonResponse, Http404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -8,10 +8,12 @@ from django.db.models import Count, ExpressionWrapper
 from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, RegistrationForm
 from .models import Site,Evenement, Region, Departement, RaisonsEvenement
 from .fonctions import import_csv_ev,format_form_field, pagination_format,import_site_from_csv,import_event_from_csv
-from datetime import datetime
+import datetime
 from django.utils import timezone as timezone
 from django.db import connection
 from django.db.models import Q # for complex queries
+import json
+import math
 
 PER_PAGE = 25
 
@@ -45,7 +47,9 @@ def index(request):
 			"filtre":filtre.nom_region.lower(),
 			# SELECT COUNT(*) qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND status_ev="down" GROUP BY code_site_id ORDER BY qte DESC LIMIT 5;
 		}
-		#print(context['recent_events'].query)
+		context['internet_total']=round(context['internet_status']['up']*100/Site.objects.filter(region=filtre).exclude(internet='').count(),1)
+		context['isante_total']=round(context['isante_status']['up']*100/Site.objects.filter(region=filtre).exclude(isante='').count(),1)
+		context['fingerprint_total']=round(context['fingerprint_status']['up']*100/Site.objects.filter(region=filtre).exclude(fingerprint='').count(),1)
 		
 	else:
 		with connection.cursor() as cursor:
@@ -63,6 +67,9 @@ def index(request):
 			"top_bad_sites":top_bad_sites_formated,
 			# SELECT COUNT(*) qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND status_ev="down" GROUP BY code_site_id ORDER BY qte DESC LIMIT 5;
 		}
+		context['internet_total']=round(context['internet_status']['up']*100/Site.objects.exclude(internet='').count(),1)
+		context['isante_total']=round(context['internet_status']['up']*100/Site.objects.exclude(isante='').count(),1)
+		context['fingerprint_total']=round(context['internet_status']['up']*100/Site.objects.exclude(fingerprint='').count(),1)
 	return render(request, 'dashboard.html', context)
 
 def dashboard(request):
@@ -174,12 +181,40 @@ def edit_site(request,id_site):
 	return render(request, 'site_edit.html', context)
 
 @login_required
-def site(request,id_site):
+def view_site(request,id_site):
 	page_title = 'Information sur le site'
 	context = {
 		"page_title":page_title
 	}
-	return render(request, 'index.html', context)
+	try:
+		id_site = int(id_site)
+		site = Site.objects.get(pk=id_site)
+		context['page_title']= site.nom
+	except Site.DoesNotExist:
+		return HttpResponse('Site not exist',404)
+		
+	event_list = Evenement.objects.filter(code_site=site).order_by('-date_ev')
+	paginator = Paginator(event_list,PER_PAGE)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+	context['page_obj']=page_obj
+	context['page_range']= pagination_format(page_obj)
+	data_int={"up":Evenement.objects.select_related('code_site').filter(code_site_id=23,status_ev='up').count(),"down":Evenement.objects.select_related('code_site').filter(code_site_id=23,status_ev='down').count()}
+	quater_1 = [datetime.datetime(2020,1,1),datetime.datetime(2020,3,31)]
+	m=[]
+	m.append([datetime.date(2020,1,1),datetime.date(2020,1,31)])
+	m.append([datetime.date(2020,2,1),datetime.date(2020,2,29)])
+	m.append([datetime.date(2020,3,1),datetime.date(2020,3,31)])
+	int_data_up=[]
+	for i in range(3):
+		int_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=23,status_ev='up',date_ev__range=(m[i])).count())
+
+	#print(datetime.date.today()-datetime.timedelta(days=1))
+	#print(datetime.datetime.strptime('2020/05/07','%Y/%M/%d')-datetime.datetime.strptime('2020/05/01','%Y/%M/%d'))
+	context['internet_data']=json.dumps({'labels':['Janvier', 'Fevrier', 'Mars','Avril'],'up':{'data':[3, 1, 2,6]},'down':{'data':[5, 2, 0,4]}})
+	context['isante_data']=json.dumps({'labels':['Janvier', 'Fevrier', 'Mars','Avril'],'up':{'data':[3, 1, 2,6]},'down':{'data':[5, 2, 0,4]}})
+	context['fingerprint_data']=json.dumps({'labels':['Janvier', 'Fevrier', 'Mars','Avril'],'up':{'data':[3, 1, 2,6]},'down':{'data':[5, 2, 0,4]}})
+	return render(request, 'site_view.html', context)
 
 @login_required
 def list_sites(request,page=1):
@@ -404,3 +439,15 @@ def import_events(request):
 				return render(request, 'file_import.html', context)
 	return render(request, 'file_import.html', context)
 
+def site_stats(request, id_site, comp):
+	data={}
+	if comp == 'internet':
+		data= {'labels'  : ['Janvier', 'Fevrier', 'Mars']\
+		,'datasets':{'label':'Status Up','backgroundColor':'#008000','borderColor':'#008000'\
+		,'hoverBackgroundColor':'#3b8bba','pointBorderColor':'rgba(60,141,188,1)'\
+		,'pointHoverBackground':'#fff','pointHoverBorderColor':'rgba(60,141,188,1)'\
+		,'fill':'false','data':[3, 1, 2, 0,]}}
+		
+		return JsonResponse(data)
+	
+	return JsonResponse(data)
