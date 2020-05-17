@@ -124,7 +124,7 @@ def import_event_from_csv(fichier):
 			if len(ligne) > 6 and len(ligne) <= 9:
 				code_site= None
 				date_entree=timezone.now()
-				nom_utilisateur= '1001'
+				nom_utilisateur= 'admin'
 				entite_concerne=''
 				status_ev = ''
 				site = None
@@ -139,7 +139,7 @@ def import_event_from_csv(fichier):
 					raison = RaisonsEvenement.objects.get(pk=1)
 				try:
 					site = Site.objects.get(code=ligne[0])
-					new_event= Evenement(code_site=site,entite_concerne=entite_concerne.lower(),status_ev=ligne[3].lower(),date_ev=datetime.strptime(ligne[4], '%Y/%M/%d'),raison_ev=raison,date_rap=datetime.strptime(ligne[6], '%Y/%M/%d'),pers_contact=ligne[7],remarques=ligne[8],date_entree=date_entree,nom_utilisateur=nom_utilisateur)
+					new_event= Evenement(code_site=site,entite_concerne=entite_concerne.lower(),status_ev=ligne[3].lower(),date_ev=datetime.strptime(ligne[4], '%Y/%m/%d'),raison_ev=raison,date_rap=datetime.strptime(ligne[6], '%Y/%m/%d'),pers_contact=ligne[7],remarques=ligne[8],date_entree=date_entree,nom_utilisateur=nom_utilisateur)
 					new_event.save()
 					new_line_count += 1
 				except Site.DoesNotExist:

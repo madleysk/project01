@@ -3,6 +3,17 @@
 {% block body %}
 <section>
 	<h4 class="text-center" >{{ page_title }}</h4>
+	<div class="text-center">
+		<form method="get">
+			<select name="periode" id="periode">
+				<option value="last_year" {% if periode == 'last_year'%} selected {% endif %}>Last Year</option>
+				<option value="q1" {% if periode == 'q1'%} selected {% endif %}>Quarter 1</option>
+				<option value="q2" {% if periode == 'q2'%} selected {% endif %}>Quarter 2</option>
+				<option value="q3" {% if periode == 'q3'%} selected {% endif %}>Quarter 3</option>
+				<option value="q4" {% if periode == 'q4'%} selected {% endif %}>Quarter 4</option>
+			</select>
+		</form>
+	</div>
 	<div class="row">
 		<div class="col-md-4">
 		<!-- DONUT CHART -->
@@ -59,33 +70,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-	var areaChartData = {
-      labels  : ['Janvier', 'Fevrier', 'Mars',],
-      datasets: [
-        {
-          label               : 'Status Up',
-          backgroundColor     : '#008000',
-          borderColor         : '#008000',
-          hoverBackgroundColor: '#3b8bba',
-          pointBorderColor    : 'rgba(60,141,188,1)',
-          pointHoverBackground  : '#fff',
-          pointHoverBorderColor: 'rgba(60,141,188,1)',
-          fill				  : false,
-          data                : [3, 1, 2, 0,]
-        },
-        {
-          label               : 'Status Down',
-          backgroundColor     : '#FF000',
-          borderColor         : '#FF0000',
-          hoverBackgroundColor: '#3b8bba',
-          pointBorderColor    : 'rgba(60,141,188,1)',
-          pointHoverBackground  : '#fff',
-          pointHoverBorderColor: 'rgba(60,141,188,1)',
-          fill				  : false,
-          data                : [1, 3, 2, 4,]
-        }
-      ]
-    }
 	
     var areaChartOptions = {
       //Boolean - If we should show the scale at all
@@ -127,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
 		//-------------
-    //- AREA CHART - Isante
+    //- AREA CHART - Internet
     //-------------
     var src_internet = JSON.parse('{{internet_data|safe}}')
     var internet_status_data = {
@@ -162,20 +146,75 @@ document.addEventListener('DOMContentLoaded', function(){
 		//-------------
     //- AREA CHART - Isante
     //-------------
+    var src_isante = JSON.parse('{{isante_data|safe}}')
+    var isante_status_data = {
+      labels  : src_internet.labels,
+      datasets:[{
+	  label               : 'Status Up',
+	  backgroundColor     : '#008000',
+	  borderColor         : '#008000',
+	  hoverBackgroundColor: '#3b8bba',
+	  pointBorderColor    : 'rgba(60,141,188,1)',
+	  pointHoverBackground  : '#fff',
+	  pointHoverBorderColor: 'rgba(60,141,188,1)',
+	  fill				  : false,
+	  data                : src_isante.up.data
+	},{
+	  label               : 'Status Down',
+	  backgroundColor     : '#FF0000',
+	  borderColor         : '#FF0000',
+	  hoverBackgroundColor: '#3b8bba',
+	  pointBorderColor    : 'rgba(60,141,188,1)',
+	  pointHoverBackground  : '#fff',
+	  pointHoverBorderColor: 'rgba(60,141,188,1)',
+	  fill				  : false,
+	  data                : src_isante.down.data
+	}]
+	}
     var ctx = new Chart(document.getElementById("areaChartIsante"), {
 	type:'line',
-	data: areaChartData,
+	data: isante_status_data,
 	options:areaChartOptions
 	});
 		//-------------
-    //- AREA CHART - Isante
+    //- AREA CHART - Fingerprint
     //-------------
+    var src_fingerprint = JSON.parse('{{fingerprint_data|safe}}')
+    var fingerprint_status_data = {
+      labels  : src_internet.labels,
+      datasets:[{
+	  label               : 'Status Up',
+	  backgroundColor     : '#008000',
+	  borderColor         : '#008000',
+	  hoverBackgroundColor: '#3b8bba',
+	  pointBorderColor    : 'rgba(60,141,188,1)',
+	  pointHoverBackground  : '#fff',
+	  pointHoverBorderColor: 'rgba(60,141,188,1)',
+	  fill				  : false,
+	  data                : src_fingerprint.up.data
+	},{
+	  label               : 'Status Down',
+	  backgroundColor     : '#FF0000',
+	  borderColor         : '#FF0000',
+	  hoverBackgroundColor: '#3b8bba',
+	  pointBorderColor    : 'rgba(60,141,188,1)',
+	  pointHoverBackground  : '#fff',
+	  pointHoverBorderColor: 'rgba(60,141,188,1)',
+	  fill				  : false,
+	  data                : src_fingerprint.down.data
+	}]
+	}
     var ctx = new Chart(document.getElementById("areaChartFing"), {
 	type:'line',
-	data: areaChartData,
+	data: fingerprint_status_data,
 	options:areaChartOptions
 	});
 	
+	document.getElementById("periode").onchange= function(){
+		var current_url= window.location.origin+window.location.pathname;
+		var val= this.value;
+		window.location.replace(current_url+'?periode='+val);
+		}
 	});
 </script>
 {% endblock %}

@@ -14,6 +14,7 @@ from django.db import connection
 from django.db.models import Q # for complex queries
 import json
 import math
+import calendar
 
 PER_PAGE = 25
 
@@ -193,27 +194,95 @@ def view_site(request,id_site):
 	except Site.DoesNotExist:
 		return HttpResponse('Site not exist',404)
 		
-	event_list = Evenement.objects.filter(code_site=site).order_by('-date_ev')
-	paginator = Paginator(event_list,PER_PAGE)
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-	context['page_obj']=page_obj
-	context['page_range']= pagination_format(page_obj)
-	data_int={"up":Evenement.objects.select_related('code_site').filter(code_site_id=23,status_ev='up').count(),"down":Evenement.objects.select_related('code_site').filter(code_site_id=23,status_ev='down').count()}
-	quater_1 = [datetime.datetime(2020,1,1),datetime.datetime(2020,3,31)]
-	m=[]
-	m.append([datetime.date(2020,1,1),datetime.date(2020,1,31)])
-	m.append([datetime.date(2020,2,1),datetime.date(2020,2,29)])
-	m.append([datetime.date(2020,3,1),datetime.date(2020,3,31)])
 	int_data_up=[]
-	for i in range(3):
-		int_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=23,status_ev='up',date_ev__range=(m[i])).count())
+	int_data_down=[]
+	isante_data_up=[]
+	isante_data_down=[]
+	fing_data_up=[]
+	fing_data_down=[]
+	# lambda function to get first day and last day range as a list of two dates
+	periode = lambda y,m: [datetime.date(y,m,1),datetime.date(y,m,calendar.monthrange(y,m)[1])]
+	last_year ={
+		"months_names":['jan','fev','mar','avr','mai','juin','juil','aout','sept','oct','nov','dec'],
+		"month1":periode((datetime.date.today().year)-1,1),
+		"month2":periode((datetime.date.today().year)-1,2),
+		"month3":periode((datetime.date.today().year)-1,3),
+		"month4":periode((datetime.date.today().year)-1,4),
+		"month5":periode((datetime.date.today().year)-1,5),
+		"month6":periode((datetime.date.today().year)-1,6),
+		"month7":periode((datetime.date.today().year)-1,7),
+		"month8":periode((datetime.date.today().year)-1,8),
+		"month9":periode((datetime.date.today().year)-1,9),
+		"month10":periode((datetime.date.today().year)-1,10),
+		"month11":periode((datetime.date.today().year)-1,11),
+		"month12":periode((datetime.date.today().year)-1,12),
+	}
+	q1 = {
+		"months_names":['octobre','novembre','decembre'],
+		"month1":periode((datetime.date.today().year)-1,10),
+		"month2":periode((datetime.date.today().year)-1,11),
+		"month3":periode((datetime.date.today().year)-1,12),
+	}
+	q2 = {
+		"months_names":['janvier','fevrier','mars'],
+		"month1":periode(datetime.date.today().year,1),
+		"month2":periode(datetime.date.today().year,2),
+		"month3":periode(datetime.date.today().year,3),
+	}
+	q3 = {
+		"months_names":['avril','mai','juin'],
+		"month1":periode(datetime.date.today().year,4),
+		"month2":periode(datetime.date.today().year,5),
+		"month3":periode(datetime.date.today().year,6),
+	}
+	q4 = {
+		"months_names":['juillet','aout','septembre'],
+		"month1":periode(datetime.date.today().year,7),
+		"month2":periode(datetime.date.today().year,8),
+		"month3":periode(datetime.date.today().year,9),
+	}
+	periodes= {"last_year":last_year,"q1":q1,"q2":q2,"q3":q3,"q4":q4}
+	periode= request.GET.get('periode')
+	if periode is not None and periode !='last_year':
+		event_list = Evenement.objects.filter(code_site=site,date_ev__range=(periodes[periode]['month1'][0],periodes[periode]['month3'][1])).order_by('-date_ev')
+		paginator = Paginator(event_list,PER_PAGE)
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)
+		context['page_obj']=page_obj
+		context['page_range']= pagination_format(page_obj)
+		for key,val in periodes[periode].items():
+			if key != 'months_names':
+				int_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='internet',status_ev='up',date_ev__range=(val[0],val[1])).count())
+				int_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='internet',status_ev='down',date_ev__range=(val[0],val[1])).count())
+				isante_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='isante',status_ev='up',date_ev__range=(val[0],val[1])).count())
+				isante_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='isante',status_ev='down',date_ev__range=(val[0],val[1])).count())
+				fing_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='fingerprint',status_ev='up',date_ev__range=(val[0],val[1])).count())
+				fing_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='fingerprint',status_ev='down',date_ev__range=(val[0],val[1])).count())
+				context['internet_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':int_data_up},'down':{'data':int_data_down}})
+				context['isante_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':isante_data_up},'down':{'data':isante_data_down}})
+				context['fingerprint_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':fing_data_up},'down':{'data':fing_data_down}})
+		context['periode']= periode
+	else:
+		event_list = Evenement.objects.filter(code_site=site).order_by('-date_ev')
+		paginator = Paginator(event_list,PER_PAGE)
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)
+		context['page_obj']=page_obj
+		context['page_range']= pagination_format(page_obj)
+		for key,val in last_year.items():
+			if key != 'months_names':
+				int_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='internet',status_ev='up',date_ev__range=(val[0],val[1])).count())
+				int_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='internet',status_ev='down',date_ev__range=(val[0],val[1])).count())
+				isante_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='isante',status_ev='up',date_ev__range=(val[0],val[1])).count())
+				isante_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='isante',status_ev='down',date_ev__range=(val[0],val[1])).count())
+				fing_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='fingerprint',status_ev='up',date_ev__range=(val[0],val[1])).count())
+				fing_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='fingerprint',status_ev='down',date_ev__range=(val[0],val[1])).count())
 
-	#print(datetime.date.today()-datetime.timedelta(days=1))
-	#print(datetime.datetime.strptime('2020/05/07','%Y/%M/%d')-datetime.datetime.strptime('2020/05/01','%Y/%M/%d'))
-	context['internet_data']=json.dumps({'labels':['Janvier', 'Fevrier', 'Mars','Avril'],'up':{'data':[3, 1, 2,6]},'down':{'data':[5, 2, 0,4]}})
-	context['isante_data']=json.dumps({'labels':['Janvier', 'Fevrier', 'Mars','Avril'],'up':{'data':[3, 1, 2,6]},'down':{'data':[5, 2, 0,4]}})
-	context['fingerprint_data']=json.dumps({'labels':['Janvier', 'Fevrier', 'Mars','Avril'],'up':{'data':[3, 1, 2,6]},'down':{'data':[5, 2, 0,4]}})
+				context['internet_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':int_data_up},'down':{'data':int_data_down}})
+				context['isante_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':isante_data_up},'down':{'data':isante_data_down}})
+				context['fingerprint_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':fing_data_up},'down':{'data':fing_data_down}})
+		context['periode']= 'last_year'
+	
 	return render(request, 'site_view.html', context)
 
 @login_required
