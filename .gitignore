@@ -1,0 +1,16 @@
+# my ignored files
+
+# virtual environement files
+venv/*
+
+#cached files
+__pycache__/*
+*/__pycache__/*
+
+# backup files
+*.back
+*.bck
+
+# sqlite databases
+*.sqlite3
+
