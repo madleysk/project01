@@ -263,7 +263,7 @@ def view_site(request,id_site):
 				context['fingerprint_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':fing_data_up},'down':{'data':fing_data_down}})
 		context['periode']= periode
 	else:
-		event_list = Evenement.objects.filter(code_site=site).order_by('-date_ev')
+		event_list = Evenement.objects.filter(code_site=site,date_ev__range=(last_year['month1'][0],last_year['month12'][1])).order_by('-date_ev')
 		paginator = Paginator(event_list,PER_PAGE)
 		page_number = request.GET.get('page')
 		page_obj = paginator.get_page(page_number)
