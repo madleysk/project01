@@ -203,7 +203,7 @@ def view_site(request,id_site):
 	# lambda function to get first day and last day range as a list of two dates
 	periode = lambda y,m: [datetime.date(y,m,1),datetime.date(y,m,calendar.monthrange(y,m)[1])]
 	last_year ={
-		"months_names":['jan','fev','mar','avr','mai','juin','juil','aout','sept','oct','nov','dec'],
+		"months_names":['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sept','Oct','Nov','Déc'],
 		"month1":periode((datetime.date.today().year)-1,1),
 		"month2":periode((datetime.date.today().year)-1,2),
 		"month3":periode((datetime.date.today().year)-1,3),
@@ -218,25 +218,25 @@ def view_site(request,id_site):
 		"month12":periode((datetime.date.today().year)-1,12),
 	}
 	q1 = {
-		"months_names":['octobre','novembre','decembre'],
+		"months_names":['Octobre','Novembre','Décembre'],
 		"month1":periode((datetime.date.today().year)-1,10),
 		"month2":periode((datetime.date.today().year)-1,11),
 		"month3":periode((datetime.date.today().year)-1,12),
 	}
 	q2 = {
-		"months_names":['janvier','fevrier','mars'],
+		"months_names":['Janvier','Février','Mars'],
 		"month1":periode(datetime.date.today().year,1),
 		"month2":periode(datetime.date.today().year,2),
 		"month3":periode(datetime.date.today().year,3),
 	}
 	q3 = {
-		"months_names":['avril','mai','juin'],
+		"months_names":['Avril','Mai','Juin'],
 		"month1":periode(datetime.date.today().year,4),
 		"month2":periode(datetime.date.today().year,5),
 		"month3":periode(datetime.date.today().year,6),
 	}
 	q4 = {
-		"months_names":['juillet','aout','septembre'],
+		"months_names":['Juillet','Août','Septembre'],
 		"month1":periode(datetime.date.today().year,7),
 		"month2":periode(datetime.date.today().year,8),
 		"month3":periode(datetime.date.today().year,9),

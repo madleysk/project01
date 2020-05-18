@@ -1,9 +1,9 @@
+<!-- Adding pagination if there are more than one page -->
+{% if page_obj.paginator.num_pages > 1%}
 <div class="text-center">
-	{% if page_obj.paginator.num_pages > 1%}
 	<span class="ellipsis">
 		Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}.
 	</span>
-	{% endif %}
 </div>
 <nav aria-label="Navigation Page" class="pull-right" style="overflow:auto;">
 	<ul class="pagination">
@@ -30,3 +30,4 @@
 		{% endif %}
 	</ul>
 </nav>
+{% endif %}
