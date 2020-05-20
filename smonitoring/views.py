@@ -114,7 +114,8 @@ def subscribe(request):
 	if request.method == 'POST':
 		f1 = RegistrationForm(request.POST)
 		if f1.is_valid():
-			user = f1.save(commit = False)
+			username = f1.cleaned_data['username']
+			print(username)
 			#user.save()			
 	else:
 		f1 = RegistrationForm(None)
@@ -201,7 +202,7 @@ def view_site(request,id_site):
 	fing_data_up=[]
 	fing_data_down=[]
 	# lambda function to get first day and last day range as a list of two dates
-	periode = lambda y,m: [datetime.date(y,m,1),datetime.date(y,m,calendar.monthrange(y,m)[1])]
+	periode = lambda y,m: [(datetime.date(y,m,1)),(datetime.date(y,m,calendar.monthrange(y,m)[1]))]
 	last_year ={
 		"months_names":['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sept','Oct','Nov','Déc'],
 		"month1":periode((datetime.date.today().year)-1,1),

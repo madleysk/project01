@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<!-- My Style -->
 	{% load static %}
+	<link rel="icon" href="{%  static 'favicon.ico' %}" type="image/ico" sizes="16x16">
 	<link rel="stylesheet" href="{%  static 'css/mystyle.css' %}">
 </head>
 <body>
@@ -28,7 +29,7 @@
 		{% if user.is_authenticated %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			<span class="fafa-flag">&nbsp;</span>Evénement
+			<span class="fa fa-flag">&nbsp;</span>Evénement
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 			  <a class="dropdown-item" href="{% url 'add_event' %}"><span class="fa fa-check-square-o">&nbsp;</span>Nouvel Evénement</a>
@@ -38,7 +39,7 @@
 		{% if user.is_staff %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			<span class="fafa-tasks">&nbsp;</span>Administration
+			<span class="fa fa-tasks">&nbsp;</span>Administration
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 			  <a class="dropdown-item" href="{% url 'import_events' %}"><span class="fa fa-upload">&nbsp;</span>Importer événements</a>

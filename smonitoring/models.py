@@ -91,19 +91,7 @@ class Evenement(models.Model):
 	pers_contact = models.CharField(max_length=100, default=None, blank=True,null=True)
 	remarques = models.CharField(max_length=100, default=None, blank=True,null=True)
 	nom_utilisateur = models.CharField(max_length=50)
-	"""
-	def __init__(self,code_site,entite_concerne,status_ev,date_ev,raison_ev,date_rap,pers_contact,remarques,date_entree,code_utilisateur):
-		self.code_site=code_site
-		self.entite_concerne=entite_concerne
-		self.status_ev=status_ev
-		self.raison_ev=raison_ev
-		self.date_ev=date_ev
-		self.date_rap=date_rap
-		self.date_entree=date_entree
-		self.pers_contact=pers_contact
-		self.remarques=remarques
-		self.code_utilisateur=code_utilisateur
-	"""
+
 	def __str__(self):
 		return f"{self.entite_concerne} {self.status_ev} ({self.code_site})"
 
