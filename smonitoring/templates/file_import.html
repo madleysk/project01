@@ -2,7 +2,7 @@
 
 {% block body %}
 <style>
-	.boite{
+	.boit{
 		max-width:500px;
 		box-shadow: 5px 5px #BFBFBF;
 		border-radius: 0 0 10px 10px;
@@ -15,25 +15,33 @@
 		}
 </style>
 <section class="content">
-	<h4 class="text-center">{{ page_title }}</h4>
+	
 	
 	<form method="POST" enctype="multipart/form-data" >{% csrf_token%}
-		<div class="row boite">
-			<div class="form-group col-sm-12">
-				<h5>Votre fichier doit contenir les colonnes suivantes de manière ordonnée:</h5>
-				<p>Les colonnes marquées d'un (<span style="color:red;">*</span>) sont obligatoires. </p>
-				{% if info %}
-					<div class="msg-content">
-						{{ info }}
+		<div class="card card-primary card-outline mt-2">
+			<div class="card-header">
+				<h4 class="card-title text-center">{{ page_title }}</h4>
+				<div class="card-tools"></div>
+			</div>
+			<div class="card-body">
+				<div class="row boite">
+					<div class="form-group col-sm-12">
+						<h5>Votre fichier doit contenir les colonnes suivantes de manière ordonnée:</h5>
+						<p>Les colonnes marquées d'un (<span style="color:red;">*</span>) sont obligatoires. </p>
+						{% if info %}
+							<div class="msg-content">
+								{{ info }}
+							</div>
+						{% endif %}
 					</div>
-				{% endif %}
-			</div>
-			<div class="form-group col-sm-12">
-				<label for="fichier">Séléctionner fichier</label><br>
-				<input type="file" name="fichier" id="fichier" class="" required >
-			</div>
-			<div class="form-group col-sm-12">
-				<button type="submit" class="btn-sm btn-primary btn-block">Importer</button>
+					<div class="form-group col-sm-12">
+						<label for="fichier">Séléctionner fichier</label><br>
+						<input type="file" name="fichier" id="fichier" class="" required >
+					</div>
+					<div class="form-group col-sm-12">
+						<button type="submit" class="btn-sm btn-primary btn-bloc">Importer</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</form>

@@ -38,7 +38,8 @@ def index(request):
 				for t in top_bad_sites:
 					top_bad_sites_formated.append({"qte":t[0],"id":t[1],"nom":t[2]})
 		except AttributeError:
-			raise Http404('No such region !')
+			raise Http404('No such a region !')
+
 		context= {
 			"page_title":"Site Monitoring - Accueil",
 			"internet_status":{"up":Site.objects.filter(internet="up",region=filtre).count(),"down":Site.objects.filter(internet="down",region=filtre).count()},
@@ -47,6 +48,7 @@ def index(request):
 			"recent_events":Evenement.objects.select_related('code_site').filter(code_site__region=filtre).order_by('-date_rap')[:5],
 			"top_bad_sites":top_bad_sites_formated,
 			"filtre":filtre.nom_region.lower(),
+			# SELECT COUNT(*) qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND status_ev="down" GROUP BY code_site_id ORDER BY qte DESC LIMIT 5;
 		}
 		context['internet_total']=round(context['internet_status']['up']*100/Site.objects.filter(region=filtre).exclude(internet='').count(),1)
 		context['isante_total']=round(context['isante_status']['up']*100/Site.objects.filter(region=filtre).exclude(isante='').count(),1)
@@ -508,6 +510,40 @@ def import_events(request):
 				context['msg_info']= 'Seulement les fichiers csv sont permis.' 
 				return render(request, 'file_import.html', context)
 	return render(request, 'file_import.html', context)
+
+
+@login_required
+def internal_api(request,obj=None):
+	liste=[]
+	if obj == 'sites':
+		sites = Site.objects.all()
+		for site in sites:
+			st={
+			"id":site.id,
+			"code":site.code,
+			"nom":site.nom,
+			"region":site.region.nom_region,
+			"departement":site.departement.nom_departement,
+			"internet":site.internet,
+			"contact_1":site.contact_1,
+			"tel_1":site.tel_1,
+			}
+			liste.append(st)
+	elif obj =='events':
+		events = Evenement.objects.all()
+		for event in events:
+			ev = {
+			"id":event.id,
+			"evenement":f'{event.entite_concerne} {event.status_ev}',
+			"site":f'{event.code_site}',
+			"fai":f'{event.code_site.fai}',
+			"departement":f'{event.code_site.departement}',
+			"region":f'{event.code_site.region}',
+			"date_ev":f'{event.date_ev}',
+			}
+			liste.append(ev)
+	return JsonResponse(liste, safe=False)
+
 
 def site_stats(request, id_site, comp):
 	data={}

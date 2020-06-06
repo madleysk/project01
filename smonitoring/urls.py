@@ -23,4 +23,6 @@ urlpatterns = [
 	path("list_events/page/<int:page>",views.list_events,name="list_events"),
 	
 	path("site_stats/<int:id_site>/<str:comp>",views.site_stats,name="site_stats"),
+	
+	path("internal_api/<str:obj>",views.internal_api,name="api"),
 ]
