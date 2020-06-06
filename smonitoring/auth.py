@@ -2,7 +2,6 @@ from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import User
 
-
 class Auth(BaseBackend):
 	def authenticate(self,request, username=None,password=None):
 		try:
