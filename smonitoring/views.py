@@ -98,7 +98,14 @@ def login_view(request):
 		user = authenticate(request,  username=username, password=passwd)
 		if user is not None:
 			login(request, user)
-			return HttpResponseRedirect(reverse("home"))
+			# get url to redirect after login
+			nxt = request.GET.get('next')
+			if nxt:
+				# redirect to the url if defined
+				return HttpResponseRedirect(nxt)
+			else:
+				# else go to home page
+				return HttpResponseRedirect(reverse("home"))
 		else:
 			context['errors']= 'Erreur de mot de passe ou nom utilisateur.'
 	return render(request, 'login.html', context)
@@ -124,6 +131,14 @@ def subscribe(request):
 		f1 = RegistrationForm(None)
 	context['form'] = f1
 	return render(request, 'account/subscribe.html', context)
+
+@login_required
+def profile(request,update=0):
+	if request.method == 'POST':
+		firstname = request.POST.get('firstname')
+		lastname = request.POST.get('lastname')
+		print(firstname,lastname)
+	return JsonResponse('')
 
 @login_required
 def change_password(request):

@@ -77,7 +77,7 @@
 					{% endif %}
 				</a>
 				<div class="dropdown-menu dropdown-menu-right" arial-labelledby="dropdownMenuLink">
-					<a class="dropdown-item disabled" href="#"><span class="fa fa-user-circle">&nbsp;</span>Mon Profil</a>
+					<a class="dropdown-item" href="#" data-toggle="modal" data-target="#profileModal"><span class="fa fa-user-circle">&nbsp;</span>Mon Profil</a>
 					<div class="dropdown-divider"></div>
 					<a class="dropdown-item" href="{% url 'change_password' %}"><span class="fa fa-key">&nbsp;</span>Changer mot de passe</a>
 					<div class="dropdown-divider"></div>
@@ -110,6 +110,8 @@
 	<footer class="footer text-center mt-5">
 		<p class="">&copy; Projet Santé - 2020</p>
 	</footer>
+	<!-- Profile Modal -->
+	{% include "account/profile.html" %}
 	<!-- jQuery 3 -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<!-- Popper JS -->

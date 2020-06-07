@@ -1,5 +1,5 @@
 from django.contrib.auth.backends import BaseBackend
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 
 class MyAccount(BaseBackend):
@@ -7,7 +7,6 @@ class MyAccount(BaseBackend):
 		try:
 			user = User.objects.get(username=username)
 			pwd_valid = check_password(password,user.password)
-			print(username,pwd_valid)
 			if pwd_valid:
 				return user
 			else:
@@ -26,7 +25,7 @@ class MyAccount(BaseBackend):
 			pwd_valid = check_password(old_password,user.password)
 			if pwd_valid:
 				# changing the password
-				user.password=make_password(new_password)
+				user.set_password(new_password)
 				# saving the change
 				user.save()
 				# confirm password change success

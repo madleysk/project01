@@ -1,0 +1,63 @@
+<!-- Profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="profileModalLabel">Profil utilisateur</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="/accounts/profile?next=">
+			{% csrf_token%}
+			<div class="row">
+				<div class="form-group col-12">
+					<label for="username" class="">Nom utilisateur</label>
+					<input type="text" name="username" id="username" value="{{user.username}}" class="form-control" disabled />
+				</div>
+				<div class="form-group col-12">
+					<label for="email" class="">Adresse email</label>
+					<input type="text" name="email" id="email" value="{{user.email}}" class="form-control" disabled />
+				</div>
+				<div class="form-group col-12">
+					<label for="firstname" class="">Prenoms</label>
+					<input type="text" name="firstname" id="firstname" value="{{user.first_name}}" class="form-control"  placeholder="non defini" readonly="readonly" onfocus="this.removeAttribute('readonly');" />
+				</div>
+				<div class="form-group col-12">
+					<label for="lastname" class="">Nom de famille</label>
+					<input type="text" name="lastname" id="lastname" value="{{user.last_name}}" class="form-control" placeholder="non defini" readonly="readonly" onfocus="this.removeAttribute('readonly');" />
+				</div>
+				<div class="form-group col-12">
+					<label for="permissions" class="">Permissions</label>
+					<input type="text" name="permissions" id="permissions" value="{{user.get_group_permissions}}" class="form-control" placeholder="non defini"  disabled />
+				</div>
+			</div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="updateProfileBtn" disabled>Mettre a jour</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+	$('#profileModal').on('show.bs.modal', function (event) {
+		var modal = $(this)
+		// Disable inputs on showing
+		modal.find('.modal-body input').attr('readonly','readonly')
+		// Enable update button on inputs change
+		/*modal.find('.modal-body input').on('change',function(){
+			event.preventDefault();
+			modal.find('.modal-footer button').removeAttr('disabled');
+			});
+		var updateBtn = modal.find('.modal-footer #updateProfileBtn');
+		updateBtn.on('click',function(e){
+			e.preventDefault();
+			alert('Submit called');
+			});*/
+		});
+});
+</script>
