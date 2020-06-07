@@ -2,6 +2,7 @@ from django.db import models
 from django.forms import ModelForm
 from django import forms
 from .models import Site, Evenement, RaisonsEvenement, Region, Departement
+from django.contrib.auth import authenticate
 from datetime import datetime
 #from django import Form
 
@@ -9,11 +10,11 @@ EL_STATUS= [('','----------'),('up','Up'),('down','Down'),('none','Non installé
 LISTE_FAI = [('','----------'),('aucun','N/A'),('digicel','Digicel'),('natcom','Natcom'),('access','Access Haiti'),('hainet','Hainet')]
 
 class RegistrationForm(forms.Form):
-	username = forms.CharField(max_length=100)
-	passwd = forms.CharField(max_length=100, widget=forms.PasswordInput)
-	pwd_confirm = forms.CharField(max_length=100, widget=forms.PasswordInput)
+	username = forms.CharField(label="Pseudo",max_length=100,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Nom utilisateur'}))
+	passwd = forms.CharField(label="Mot de passe",max_length=100, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Mot de passe'}))
+	pwd_confirm = forms.CharField(label="Confirmation",max_length=100, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Confirmer mot de passe'}))
 	#auth_level = forms.ChoiceField(choices = [('1','User'),('2','Superuser')])
-	code = forms.CharField(required=True)
+	code = forms.CharField(required=True,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Code employe'}))
 	
 	def clean(self):
 		super(RegistrationForm, self).clean()
@@ -34,6 +35,35 @@ class RegistrationForm(forms.Form):
 		if len(code) < 4:
 			self._errors['code'] = self.error_class([
 			'Code invalide.'
+			])
+		return self.cleaned_data
+
+class ChangePassForm(forms.Form):
+	username = forms.CharField(required= True, widget=forms.HiddenInput)
+	old_passwd = forms.CharField(label="Mot de passe actuel",max_length=100, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Mot de passe actuel'}))
+	new_pass = forms.CharField(label="Nouveau mot de passe",max_length=100, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Nouveau mot de passe'}))
+	new_pass_conf = forms.CharField(label="Confirmation",max_length=100, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Confirmation mot de passe'}))
+	
+	def clean(self):
+		super(ChangePassForm, self).clean()
+		username = self.cleaned_data.get('username')
+		old_passwd = self.cleaned_data.get('old_passwd')
+		new_pass = self.cleaned_data.get('new_pass')
+		new_pass_conf = self.cleaned_data.get('new_pass_conf')
+		
+		user = authenticate('',username=username, password=old_passwd)
+		if user is None:
+			self._errors['old_passwd'] = self.error_class([
+			'Mot de passe incorrecte.'
+			])
+			
+		if len(new_pass) < 6:
+			self._errors['new_pass'] = self.error_class([
+			'Mot de passe trop court.'
+			])
+		if new_pass != new_pass_conf:
+			self._errors['new_pass_conf'] = self.error_class([
+			'Confirmation mot de passe différente.'
 			])
 		return self.cleaned_data
 

@@ -1,9 +1,11 @@
 {% for field in form %}
 	{% if not field.is_hidden %}
-	<div class="form-group col-sm-12 col-md-4">
+	<div class="form-group col-md-12">
 		{{field.label_tag}}
 		{{field}}
 		<small class="alert-danger">{{field.errors}}</small>
 	</div>
+	{% else %}
+		{{field}}
 	{% endif %}
 {% endfor %}

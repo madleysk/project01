@@ -5,9 +5,10 @@ urlpatterns = [
 	path("",views.index,name="home"),
 	path("home",views.index,name="home"),
 	path("dashboard/",views.dashboard,name="dashboard"),
-	path("subscribe/",views.subscribe,name="subscribe"),
+	path("accounts/subscribe/",views.subscribe,name="subscribe"),
 	path("accounts/login/",views.login_view,name="login"),
 	path("accounts/logout/",views.logout_view,name="logout"),
+	path("accounts/change_password/",views.change_password,name="change_password"),
 	
 	path("add_site/",views.add_site,name="add_site"),
 	path("import_sites/",views.import_sites,name="import_sites"),

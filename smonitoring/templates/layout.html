@@ -67,12 +67,23 @@
 		</ul>
 		<div class="pull-right">
 			{% if user.is_authenticated %}
-				{% if user.first_name %}
-					<span class="togle-case mr-2">Welcome, {{ user.first_name }} </span>
-				{% else %}
-					<span class="togle-case  mr-2">Welcome, {{ user.username }} </span>
-				{% endif %}
-			<a href= "{% url 'logout' %}" ><span class="fa fa-sign-out">&nbsp;</span>Déconnexion</a>
+			<div class="button-group menu-user">
+				<a href="#" class="dropdown-toggle" style="text-decoration:none;" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<span class="fa fa-user-circle-o">&nbsp;</span>
+					{% if user.first_name %}
+						{{user.get_full_name}}
+					{% else %}
+						{{user.username}}
+					{% endif %}
+				</a>
+				<div class="dropdown-menu dropdown-menu-right" arial-labelledby="dropdownMenuLink">
+					<a class="dropdown-item disabled" href="#"><span class="fa fa-user-circle">&nbsp;</span>Mon Profil</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="{% url 'change_password' %}"><span class="fa fa-key">&nbsp;</span>Changer mot de passe</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="{% url 'logout' %}"><span class="fa fa-sign-out">&nbsp;</span>Se deconnecter</a>
+				</div>
+			</div>
 			{% else %}
 			<a class="mr-2" href="#" ><span class="fa fa-user">&nbsp;</span>Inscription</a>
 			<a class="" href="{% url 'login' %}" ><span class="fa fa-sign-in">&nbsp;</span>Connexion</a>

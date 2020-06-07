@@ -5,9 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.urls import reverse
 from django.db.models import Count, ExpressionWrapper
-from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, RegistrationForm
+from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, RegistrationForm, ChangePassForm
 from .models import Site,Evenement, Region, Departement, RaisonsEvenement
 from .fonctions import import_csv_ev,format_form_field, pagination_format,import_site_from_csv,import_event_from_csv
+from .MyAccount import MyAccount
 import datetime
 from django.utils import timezone as timezone
 from django.db import connection
@@ -122,7 +123,37 @@ def subscribe(request):
 	else:
 		f1 = RegistrationForm(None)
 	context['form'] = f1
-	return render(request, 'subscribe.html', context)
+	return render(request, 'account/subscribe.html', context)
+
+@login_required
+def change_password(request):
+	context= {
+		"page_title":"Changer mots de passe",
+	}
+	if request.method == 'POST':
+		f1 = ChangePassForm(request.POST)
+		if f1.is_valid():
+			username = f1.cleaned_data['username']
+			old_passwd = f1.cleaned_data['old_passwd']
+			new_pass = f1.cleaned_data['new_pass']
+			account = MyAccount()
+			usr = account.authenticate(request,username,old_passwd)
+			if usr:
+				res = account.change_password(request,username,old_passwd,new_pass)
+				if res:
+					context['msg_success']='Mot de passe changé.'
+	else:
+		f1 = ChangePassForm(initial={'username':request.user})
+	context['form'] = f1
+	"""
+	if request.method == 'POST':
+		username = request.POST.get('username')
+		current_pass = request.POST.get('current_pass')
+		new_pass = request.POST.get('new_pass')
+		new_pass_conf = request.POST.get('new_pass_conf')
+		account = MyAccount()
+		usr = account.authenticate(request,'admin','MyP')"""
+	return render(request, 'account/change_password.html', context)
 
 @login_required
 def add_site(request):
