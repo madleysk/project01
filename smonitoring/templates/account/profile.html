@@ -3,7 +3,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="profileModalLabel">Profil utilisateur</h5>
+        <h5 class="modal-title" id="profileModalLabel">Profil utilisateur <small class=""></small></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -36,6 +36,7 @@
         </form>
       </div>
       <div class="modal-footer">
+		<small class=""></small>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="updateProfileBtn" disabled>Mettre a jour</button>
       </div>
@@ -46,18 +47,40 @@
 document.addEventListener('DOMContentLoaded', function(){
 	$('#profileModal').on('show.bs.modal', function (event) {
 		var modal = $(this)
-		// Disable inputs on showing
+		// set defaults on showing
 		modal.find('.modal-body input').attr('readonly','readonly')
+		modal.find('.modal-title small').text('')
 		// Enable update button on inputs change
-		/*modal.find('.modal-body input').on('change',function(){
+		modal.find('.modal-body input').on('change',function(){
 			event.preventDefault();
 			modal.find('.modal-footer button').removeAttr('disabled');
 			});
 		var updateBtn = modal.find('.modal-footer #updateProfileBtn');
 		updateBtn.on('click',function(e){
 			e.preventDefault();
-			alert('Submit called');
-			});*/
+			csrf_token = modal.find('.modal-body input:first').val()
+			firstname = modal.find('.modal-body #firstname').val()
+			lastname = modal.find('.modal-body #lastname').val()
+			//alert('Names: '+firstname+' '+lastname+'\n'+'desc:'+csrf_token.prop('name')+' val: '+csrf_token.val());
+			$.post("/accounts/profile",
+				{
+					csrfmiddlewaretoken: csrf_token,
+					firstname: firstname,
+					lastname: lastname
+				},
+				function(data,status){
+					if(status == 'success'){
+						modal.find('.modal-title small').text(data.message)
+						modal.find('.modal-title small').prop('class','alert-info')
+						modal.find('.modal-body input').attr('readonly','readonly')
+					}
+					else{
+						modal.find('.modal-footer small').text('Une erreur est survenue!')
+						modal.find('.modal-footer small').prop('class','alert-danger')
+					}
+					}
+			);
+			});
 		});
 });
 </script>

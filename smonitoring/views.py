@@ -135,10 +135,32 @@ def subscribe(request):
 @login_required
 def profile(request,update=0):
 	if request.method == 'POST':
+		acc = MyAccount()
+		message=''
+		obj_changed=[]
 		firstname = request.POST.get('firstname')
 		lastname = request.POST.get('lastname')
-		print(firstname,lastname)
-	return JsonResponse('')
+		if firstname and lastname:
+			usr = acc.get_user(request.user.id)
+			if usr.first_name != firstname:
+				usr.first_name = firstname
+				obj_changed.append('Prenoms')
+			if usr.last_name != lastname:
+				usr.last_name= lastname
+				obj_changed.append('Nom')
+			if len(obj_changed) == 1:
+				usr.save() # save at least one item is different
+				message = obj_changed[0] + ' a été changé !'
+			elif len(obj_changed) == 2:
+				usr.save() # save at least one item is different
+				message = obj_changed[0] + ' et '+ obj_changed[1] + ' ont été changés !'
+			else:
+				message = 'Tout est à jour !'
+		else:
+			return JsonResponse({"success":True,"message":"Noms et Prenoms sont obligatoires !"})
+		# if everything is ok
+		return JsonResponse({"success":True,"message":message})
+	return JsonResponse({"error":"Argument not submitted"})
 
 @login_required
 def change_password(request):
