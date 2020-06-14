@@ -51,9 +51,9 @@ def index(request):
 			"filtre":filtre.nom_region.lower(),
 			# SELECT COUNT(*) qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND status_ev="down" GROUP BY code_site_id ORDER BY qte DESC LIMIT 5;
 		}
-		context['internet_total']=round(context['internet_status']['up']*100/Site.objects.filter(region=filtre).exclude(internet='').count(),1)
-		context['isante_total']=round(context['isante_status']['up']*100/Site.objects.filter(region=filtre).exclude(isante='').count(),1)
-		context['fingerprint_total']=round(context['fingerprint_status']['up']*100/Site.objects.filter(region=filtre).exclude(fingerprint='').count(),1)
+		context['internet_total']=round(context['internet_status']['up']*100/Site.objects.filter(region=filtre).exclude(internet__in=['','none']).count(),1)
+		context['isante_total']=round(context['isante_status']['up']*100/Site.objects.filter(region=filtre).exclude(isante__in=['','none']).count(),1)
+		context['fingerprint_total']=round(context['fingerprint_status']['up']*100/Site.objects.filter(region=filtre).exclude(fingerprint__in=['','none']).count(),1)
 		
 	else:
 		with connection.cursor() as cursor:
