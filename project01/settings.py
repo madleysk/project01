@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '@vj6pv@-@2=ywc2gmmy4x(*%o4nnvg
 #DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG','') != 'False'
 
-ALLOWED_HOSTS = ['sitemonitoring.herokuapp.com','127.0.0.1','192.168.56.101']
+ALLOWED_HOSTS = ['sitemonitoring.herokuapp.com','127.0.0.1','192.168.56.101','192.168.56.102']
 
 
 # Application definition
