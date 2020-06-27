@@ -34,7 +34,8 @@ ALLOWED_HOSTS = ['sitemonitoring.herokuapp.com','127.0.0.1','192.168.56.101','19
 
 INSTALLED_APPS = [
     'smonitoring.apps.SmonitoringConfig',
-    'django.contrib.admin',
+    #'django.contrib.admin',
+    'apps.MyAdminConfig',  # replaces 'django.contrib.admin'
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

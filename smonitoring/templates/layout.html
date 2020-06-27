@@ -38,23 +38,31 @@
 			</div>
 		</li>
 		{% endif %}
-		{% if user.is_staff %}
+		{% if perms.smonitoring %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			<span class="fa fa-tasks">&nbsp;</span>Administration
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+			  {% if perms.smonitoring.change_evenement %}
 			  <a class="dropdown-item" href="{% url 'import_events' %}"><span class="fa fa-upload">&nbsp;</span>Importer événements</a>
 			  <a class="dropdown-item" href="{% url 'list_events' %}"><span class="fa fa-list-alt">&nbsp;</span>Liste événements</a>
+			  {% endif %}
+			  {% if perms.smonitoring.change_user %}
 			  <div class="dropdown-divider"></div>
 			  <a class="dropdown-item" href="#"><span class="fa fa-user-plus">&nbsp;</span>Ajouter utilisateur</a>
 			  <a class="dropdown-item" href="#"><span class="fa fa-list-alt">&nbsp;</span>Liste utilisateurs</a>
+			  {% endif %}
 			  <div class="dropdown-divider"></div>
+			  {% if perms.smonitoring.add_site %}
 			  <a class="dropdown-item" href="{% url 'add_site' %}"><span class="fa fa-hospital-o">&nbsp;</span>Ajouter site</a>
 			  <a class="dropdown-item" href="{% url 'import_sites' %}" ><span class="fa fa-upload">&nbsp;</span>Importer sites</a>
 			  <a class="dropdown-item" href="{% url 'list_sites' %}"><span class="fa fa-list-alt">&nbsp;</span>Liste sites</a>
+			  {% endif %}
+			  {% if user.is_staff %}
 			  <div class="dropdown-divider"></div>
 			  <a class="dropdown-item" href="{{ '/admin' }}"><span class="fa fa-cogs">&nbsp;</span>Admin Panel</a>
+			  {% endif %}
 			</div>
 		</li>
 		{% endif %}

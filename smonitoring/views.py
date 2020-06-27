@@ -1,14 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse, Http404
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
 from django.urls import reverse
 from django.db.models import Count, ExpressionWrapper
 from .forms import SiteForm, SiteEditForm, EvenementForm,EvenementEditForm, RegistrationForm, ChangePassForm
 from .models import Site,Evenement, Region, Departement, RaisonsEvenement
 from .fonctions import import_csv_ev,format_form_field, pagination_format,import_site_from_csv,import_event_from_csv
-from .MyAccount import MyAccount
 import datetime
 from django.utils import timezone as timezone
 from django.db import connection
@@ -92,6 +91,8 @@ def login_view(request):
 	context= {
 		"page_title":"Connexion",
 	}
+	f1 = ChangePassForm(request.POST)
+	context['form']=f1
 	if request.method == 'POST':
 		username = request.POST["username"]
 		passwd = request.POST["passwd"]
@@ -135,13 +136,12 @@ def subscribe(request):
 @login_required
 def profile(request,update=0):
 	if request.method == 'POST':
-		acc = MyAccount()
 		message=''
 		obj_changed=[]
 		firstname = request.POST.get('firstname')
 		lastname = request.POST.get('lastname')
 		if firstname and lastname:
-			usr = acc.get_user(request.user.id)
+			usr = request.user
 			if usr.first_name != firstname:
 				usr.first_name = firstname
 				obj_changed.append('Prenoms')
@@ -173,26 +173,23 @@ def change_password(request):
 			username = f1.cleaned_data['username']
 			old_passwd = f1.cleaned_data['old_passwd']
 			new_pass = f1.cleaned_data['new_pass']
-			account = MyAccount()
-			usr = account.authenticate(request,username,old_passwd)
+			usr = authenticate(request,  username=username, password=old_passwd)
 			if usr:
-				res = account.change_password(request,username,old_passwd,new_pass)
-				if res:
-					context['msg_success']='Mot de passe changé.'
+				#res = account.change_password(request,username,old_passwd,new_pass)
+				usr.set_password(new_pass)
+				usr.save()
+				# recreate session hash to automaticly disconnect other active sessions
+				update_session_auth_hash(request, usr)
+				# Send success message to the view
+				context['msg_success']='Mot de passe changé.'
 	else:
 		f1 = ChangePassForm(initial={'username':request.user})
 	context['form'] = f1
-	"""
-	if request.method == 'POST':
-		username = request.POST.get('username')
-		current_pass = request.POST.get('current_pass')
-		new_pass = request.POST.get('new_pass')
-		new_pass_conf = request.POST.get('new_pass_conf')
-		account = MyAccount()
-		usr = account.authenticate(request,'admin','MyP')"""
+
 	return render(request, 'account/change_password.html', context)
 
 @login_required
+@permission_required('smonitoring.add_site',raise_exception=True)
 def add_site(request):
 	LISTE_REGIONS= [('','----------')] +[(r.id,r.nom_region) for r in Region.objects.all().order_by('nom_region')]
 	LISTE_DEPTS= [('','----------')] +[(d.id,d.nom_departement) for d in Departement.objects.all().order_by('nom_departement')]
@@ -232,6 +229,7 @@ def add_site(request):
 	return render(request, 'site_add.html', context)
 
 @login_required
+@permission_required('smonitoring.change_site',raise_exception=True)
 def edit_site(request,id_site):
 	context = {
 		"page_title": 'Modifier site'
@@ -253,6 +251,7 @@ def edit_site(request,id_site):
 	return render(request, 'site_edit.html', context)
 
 @login_required
+@permission_required('smonitoring.view_site',raise_exception=True)
 def view_site(request,id_site):
 	page_title = 'Information sur le site'
 	context = {
@@ -357,6 +356,7 @@ def view_site(request,id_site):
 	return render(request, 'site_view.html', context)
 
 @login_required
+@permission_required('smonitoring.view_site',raise_exception=True)
 def list_sites(request,page=1):
 	"""List of sites with pagination enabled"""
 	page_title = 'Liste des sites'
@@ -384,6 +384,7 @@ def list_sites(request,page=1):
 	return render(request, 'site_list.html', context)
 
 @login_required
+@permission_required('smonitoring.add_site',raise_exception=True)
 def import_sites(request):
 	"""Import sites from csv file"""
 	page_title = 'Importer des sites'
@@ -423,6 +424,7 @@ def import_sites(request):
 	return render(request, 'file_import.html', context)
 
 @login_required
+@permission_required('smonitoring.add_evenement',raise_exception=True)
 def add_event(request):
 	context= {
 		"page_title":"Ajouter Evénement",
@@ -494,6 +496,7 @@ def add_event(request):
 	return render(request, 'event_add.html', context)
 
 @login_required
+@permission_required('smonitoring.change_evenement',raise_exception=True)
 def edit_event(request,id_event):
 	"""List of sites with pagination enabled"""
 	page_title = 'Modification Evénements'
@@ -514,6 +517,7 @@ def edit_event(request,id_event):
 	return render(request, 'event_edit.html', context)
 
 @login_required
+@permission_required('smonitoring.view_evenement',raise_exception=True)
 def list_events(request,page=1):
 	"""List of sites with pagination enabled"""
 	page_title = 'Liste des Evénements'
@@ -541,6 +545,7 @@ def list_events(request,page=1):
 	return render(request, 'event_list.html', context)
 		
 @login_required
+@permission_required('smonitoring.add_evenement',raise_exception=True)
 def import_events(request):
 	"""Import events from csv file"""
 	context= {
