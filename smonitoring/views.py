@@ -328,9 +328,9 @@ def view_site(request,id_site):
 				isante_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='isante',status_ev='down',date_ev__range=(val[0],val[1])).count())
 				fing_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='fingerprint',status_ev='up',date_ev__range=(val[0],val[1])).count())
 				fing_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='fingerprint',status_ev='down',date_ev__range=(val[0],val[1])).count())
-				context['internet_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':int_data_up},'down':{'data':int_data_down}})
-				context['isante_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':isante_data_up},'down':{'data':isante_data_down}})
-				context['fingerprint_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':fing_data_up},'down':{'data':fing_data_down}})
+				context['internet_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':0},'down':{'data':int_data_down}})
+				context['isante_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':0},'down':{'data':isante_data_down}})
+				context['fingerprint_data']=json.dumps({'labels':periodes[periode]['months_names'],'up':{'data':0},'down':{'data':fing_data_down}})
 		context['periode']= periode
 	else:
 		event_list = Evenement.objects.filter(code_site=site,date_ev__range=(last_year['month1'][0],last_year['month12'][1])).order_by('-date_ev')
@@ -348,9 +348,9 @@ def view_site(request,id_site):
 				fing_data_up.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='fingerprint',status_ev='up',date_ev__range=(val[0],val[1])).count())
 				fing_data_down.append(Evenement.objects.select_related('code_site').filter(code_site_id=id_site,entite_concerne='fingerprint',status_ev='down',date_ev__range=(val[0],val[1])).count())
 
-				context['internet_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':int_data_up},'down':{'data':int_data_down}})
-				context['isante_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':isante_data_up},'down':{'data':isante_data_down}})
-				context['fingerprint_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':fing_data_up},'down':{'data':fing_data_down}})
+				context['internet_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':0},'down':{'data':int_data_down}})
+				context['isante_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':0},'down':{'data':isante_data_down}})
+				context['fingerprint_data']=json.dumps({'labels':last_year['months_names'],'up':{'data':0},'down':{'data':fing_data_down}})
 		context['periode']= 'last_year'
 	
 	return render(request, 'site_view.html', context)
