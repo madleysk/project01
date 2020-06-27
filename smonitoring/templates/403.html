@@ -2,10 +2,11 @@
 
 {% block body %}
 <div class="container mt-5">
-<h1 class="alert-warning text-center">Page introuvable !</h1>
+<h5 class="alert-danger text-center">La page à laquelle vous essayer d'acceder exige une ou des permissions dont vous n'avez pas !</h5>
 <strong>Vous pouvez:</strong>
 <ul>
 	<li>Retourner à la <a href="{% url 'home' %}">page d'accueil.</a></li>
+	<li><a href="{% url 'login' %}">Vous-connecter</a> en tant qu'un autre utilisateur.</li>
 	<li>Laisser <a href="#">un commentaire ou une requete.</a></li>
 </ul>
 </div>

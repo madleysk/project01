@@ -4,3 +4,5 @@
 - Change authentification from personalized class to default Django auth class
 - Adding permission restriction on view functions
 - Adding permission restriction on template menu display (user permission context menu)
+- Custum 403 error page.
+- Edit 404 error page.
