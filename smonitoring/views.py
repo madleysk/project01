@@ -50,10 +50,14 @@ def index(request):
 			"filtre":filtre.nom_region.lower(),
 			# SELECT COUNT(*) qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND status_ev="down" GROUP BY code_site_id ORDER BY qte DESC LIMIT 5;
 		}
-		context['internet_total']=round(context['internet_status']['up']*100/Site.objects.filter(region=filtre).exclude(internet__in=['','none']).count(),1)
-		context['isante_total']=round(context['isante_status']['up']*100/Site.objects.filter(region=filtre).exclude(isante__in=['','none']).count(),1)
-		context['fingerprint_total']=round(context['fingerprint_status']['up']*100/Site.objects.filter(region=filtre).exclude(fingerprint__in=['','none']).count(),1)
-		
+		try:
+			context['internet_total']=round(context['internet_status']['up']*100/Site.objects.filter(region=filtre).exclude(internet__in=['','none']).count(),1)
+			context['isante_total']=round(context['isante_status']['up']*100/Site.objects.filter(region=filtre).exclude(isante__in=['','none']).count(),1)
+			context['fingerprint_total']=round(context['fingerprint_status']['up']*100/Site.objects.filter(region=filtre).exclude(fingerprint__in=['','none']).count(),1)
+		except ZeroDivisionError:
+			context['internet_total']=0
+			context['isante_total']=0
+			context['fingerprint_total']=0
 	else:
 		with connection.cursor() as cursor:
 			cursor.execute("SELECT COUNT(*) as qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND e.status_ev=%s GROUP BY code_site_id,s.nom ORDER BY qte DESC LIMIT 5",params=['down'])
@@ -70,9 +74,14 @@ def index(request):
 			"top_bad_sites":top_bad_sites_formated,
 			# SELECT COUNT(*) qte,code_site_id,nom from smonitoring_evenement e,smonitoring_site s WHERE e.code_site_id=s.id AND status_ev="down" GROUP BY code_site_id ORDER BY qte DESC LIMIT 5;
 		}
-		context['internet_total']=round(context['internet_status']['up']*100/Site.objects.exclude(internet__in=['','none']).count(),1)
-		context['isante_total']=round(context['isante_status']['up']*100/Site.objects.exclude(isante__in=['','none']).count(),1)
-		context['fingerprint_total']=round(context['fingerprint_status']['up']*100/Site.objects.exclude(fingerprint__in=['','none']).count(),1)
+		try:
+			context['internet_total']=round(context['internet_status']['up'] * 100 / Site.objects.exclude(internet__in=['','none']).count(),1)
+			context['isante_total']=round(context['isante_status']['up'] * 100 / Site.objects.exclude(isante__in=['','none']).count(),1)
+			context['fingerprint_total']=round(context['fingerprint_status']['up'] * 100 / Site.objects.exclude(fingerprint__in=['','none']).count(),1)
+		except ZeroDivisionError:
+			context['internet_total']=0
+			context['isante_total']=0
+			context['fingerprint_total']=0
 	return render(request, 'dashboard.html', context)
 
 def dashboard(request):
